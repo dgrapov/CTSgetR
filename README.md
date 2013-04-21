@@ -7,5 +7,5 @@ R interface to the [Chemical Translation Service (CTS)] (http://uranus.fiehnlab.
 #Install package CTSgetR
 install.packages("devtools")
 library(devtools)
-install_github("CTSgetR")
+install_github(repo = "CTSgetR", username = "dgrapov")
 ```
