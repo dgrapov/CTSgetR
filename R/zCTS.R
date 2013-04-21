@@ -4,8 +4,8 @@ CTS.getR<-function(id,from,to,progress=TRUE){ #add parallel processing
 		#to/from =	"Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock"
 		#result is a 3 column data frame of from, to and translated values
 		
-		if(require(RCurl)==FALSE){install.packages("RCurl");library(RCurl)} else { library(RCurl)} # need RCurl for web querry
-		if(require(RJSONIO)==FALSE){install.packages("RJSONIO");library(RJSONIO)} else { library(RJSONIO)} # for parsing JSON
+		#if(require(RCurl)==FALSE){install.packages("RCurl");library(RCurl)} else { library(RCurl)} # need RCurl for web querry
+		#if(require(RJSONIO)==FALSE){install.packages("RJSONIO");library(RJSONIO)} else { library(RJSONIO)} # for parsing JSON
 		
 		if (progress == TRUE){ pb <- txtProgressBar(min = 0, max = length(id), style = 3)} # show progress bar
 	
