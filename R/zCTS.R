@@ -31,7 +31,7 @@ CTS.getR<-function(id,from,to,progress=TRUE){ #add parallel processing
 
 		
 #test
-#id<-c(14242, 5760)
-#from<-"PubChem CID"
-#to<-"InChIKey"
-#CTS.getR(id,from,to)
+id<-c(14242, 5760)
+from<-"PubChem CID"
+to<-"InChIKey"
+CTS.getR(id,from,to)

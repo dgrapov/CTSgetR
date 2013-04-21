@@ -2,10 +2,10 @@
 \alias{CTS.getR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Tranlate between chemical identifiers.
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Use the Chemical Translation Service (CTS) to ranslate between the following molecular identifiers: "Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock".
 }
 \usage{
 CTS.getR(id, from, to, progress = TRUE)
@@ -13,33 +13,29 @@ CTS.getR(id, from, to, progress = TRUE)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{id}{
-%%     ~~Describe \code{id} here~~
+a vector of idenitifiers
 }
   \item{from}{
-%%     ~~Describe \code{from} here~~
+type of object translating from
 }
   \item{to}{
-%%     ~~Describe \code{to} here~~
+type of object translating to
 }
   \item{progress}{
-%%     ~~Describe \code{progress} here~~
+show progress
 }
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+a 3 column data frame containing [1] from, [2] to and [3] translated values
 }
 \references{
-%% ~put references to the literature/web site here ~
+http://uranus.fiehnlab.ucdavis.edu:8080/cts-2.0-beta-2/
 }
 \author{
-%%  ~~who you are~~
+Dmitry Grapov
 }
 \note{
 %%  ~~further notes~~
@@ -51,9 +47,15 @@ CTS.getR(id, from, to, progress = TRUE)
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
+#translate between PubChem IDs
+from<-"PubChem CID"
+#the following IDs
+id<-c(14242, 5760)
+#into InchIKeys
+to<-"InChIKey"
+
+#translate
+CTS.getR(id,from,to)
 
 ## The function is currently defined as
 function (id, from, to, progress = TRUE) 

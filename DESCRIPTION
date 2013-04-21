@@ -4,6 +4,6 @@ Title: Translation between chemical identifiers using the Chemical Translation S
 Version: 1.0
 Date: 2013-04-20
 Author: Dmitry Grapov
-Maintainer: dgrapov@gmail.com>
+Maintainer: <dgrapov@gmail.com>
 Description: Translate between "Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock"
 License: TBA
