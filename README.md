@@ -11,4 +11,4 @@ install_github(repo = "CTSgetR", username = "dgrapov")
 library(CTSgetR)
 ```
 
-Try an example translations documanted [HERE] (https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-Service-in-R).
+Try an example translations documented [HERE] (https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-Service-in-R).
