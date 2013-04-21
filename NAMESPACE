@@ -1,3 +1,4 @@
 exportPattern("^[[:alpha:]]+")
 import(RCurl,RJSONIO)
-export(zCTS.R)
+export(CTS.getR)
+S3method(CTS.getR)
