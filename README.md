@@ -13,4 +13,6 @@ library(CTSgetR)
 ```
 
 Try an example translations documented [HERE] (https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-Service-in-R).
+```R
 help(cts.getR)
+```
