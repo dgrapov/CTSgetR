@@ -66,7 +66,7 @@ CTS.getR(id,from,to) #go ahead and google it
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ Chemical Translation Service}
-\keyword{CTS}% __ONLY ONE__ keyword per line
-\keyword{InchI}
-\keyword{CID}
+%\keyword{ Chemical Translation Service}
+%\keyword{CTS}% __ONLY ONE__ keyword per line
+%\keyword{InchI}
+%\keyword{CID}
