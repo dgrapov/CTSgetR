@@ -3,12 +3,11 @@
 \alias{CTSgetR}
 \docType{package}
 \title{
-What the package does (short line)
-~~ package title ~~
+R interface to the Chemical Translation Service (CTS)
 }
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+Translate identifiers between the major biological databases including:
+"Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock".
 }
 \details{
 \tabular{ll}{
@@ -22,17 +21,15 @@ License: \tab What license is it under?\cr
 ~~ important functions ~~
 }
 \author{
-Who wrote it
-
-Maintainer: Who to complain to <yourfault@somewhere.net>
-~~ The author and/or maintainer of the package ~~
+Dmitry Grapov
+<dgrapov@ucdavis.edu>
 }
 \references{
-~~ Literature or other references for background information ~~
+
 }
 ~~ Optionally other standard keywords, one per line, from file ~~
 ~~ KEYWORDS in the R documentation directory ~~
-\keyword{ package }
+\keyword{ Chemical Translation Service }
 \seealso{
 ~~ Optional links to other man pages, e.g. ~~
 ~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~

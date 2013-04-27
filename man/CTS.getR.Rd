@@ -5,7 +5,26 @@
 Tranlate between chemical identifiers.
 }
 \description{
-Use the Chemical Translation Service (CTS) to ranslate between the following molecular identifiers: "Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock".
+Use the Chemical Translation Service (CTS) to translate between the following molecular identifiers: 
+ Chemical Name  
+ InChIKey  
+ InChI Code  
+ PubChem CID  
+ Pubchem SID  
+ ChemDB  
+ ZINC  
+ Southern Research Institute  
+ Specs  
+ MolPort  
+ ASINEX 
+ ChemBank  
+ MLSMR  
+ Emory University Molecular Libraries Screening  Center  
+ ChemSpider  
+ DiscoveryGate  
+ Ambinter  
+ Vitas-M Laboratory  
+ ChemBlock 
 }
 \usage{
 CTS.getR(id, from, to, progress = TRUE)

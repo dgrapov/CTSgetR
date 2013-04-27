@@ -100,10 +100,12 @@ CTS.translate<-function(server,from,to,id,parallel=FALSE){ #arguably parallel, s
 			return(content)
 }
 
-#test of translation from InchI to pubchem CID
-id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
-from<-"InChIKey"
-to<-"PubChem CID"
+# get possible translations from CTS
+CTS.options<-function(){
+	options(warn=-1)	
+	url<-readLines("http://cts.fiehnlab.ucdavis.edu/service/convert/fromValues")
+	tmp<-unlist(strsplit(url[1],""))
+	obj<-tmp[-c(1:2,(length(tmp)-2):length(tmp))]
+	unlist(strsplit(paste(obj[!obj=='\"'],collapse=""),","))
+	}
 
-obj<-CTS.getR(id,from,to)
-obj
