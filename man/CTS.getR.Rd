@@ -29,7 +29,8 @@ show progress
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-a 3 column data frame containing [1] from, [2] to and [3] translated values
+a 3 column data frame containing containning:
+from,  to and translated values
 }
 \references{
 http://uranus.fiehnlab.ucdavis.edu:8080/cts-2.0-beta-2/
@@ -47,64 +48,25 @@ Dmitry Grapov
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-#translate between PubChem IDs
-from<-"PubChem CID"
-#the following IDs
-id<-c(14242, 5760)
-#into InchIKeys
-to<-"InChIKey"
 
-#translate
+#translate from PubChem CID to InChIKey
+id<-c(14242, 5760)
+from<-"PubChem CID"
+to<-"InChIKey"
 CTS.getR(id,from,to)
 
-## The function is currently defined as
-function (id, from, to, progress = TRUE) 
-{
-    if (require(RCurl) == FALSE) {
-        install.packages("RCurl")
-        library(RCurl)
-    }
-    else {
-        library(RCurl)
-    }
-    if (require(RJSONIO) == FALSE) {
-        install.packages("RJSONIO")
-        library(RJSONIO)
-    }
-    else {
-        library(RJSONIO)
-    }
-    if (progress == TRUE) {
-        pb <- txtProgressBar(min = 0, max = length(id), style = 3)
-    }
-    start <- "http://uranus.fiehnlab.ucdavis.edu:8080/cts-2.0-beta-2/service/convert"
-    out <- lapply(1:length(id), function(i) {
-        if (progress == TRUE) {
-            setTxtProgressBar(pb, i)
-        }
-        url <- paste(start, from, to, id[i], sep = "/")
-        url <- gsub("\\ ", "\%20", url)
-        out <- as.character(unlist(tryCatch(getURL(url, ssl.verifypeer = FALSE), 
-            error = function(e) {
-                "error"
-            })))
-        tryCatch(data.frame(fromJSON(out))[, 1, drop = FALSE], 
-            error = function(e) {
-                data.frame(matrix("error", nrow = 3))
-            })
-    })
-    tmp <- do.call("cbind", out)
-    tmp <- cbind(from = id, to = to, result = as.character(unlist(tmp[4, 
-        ])))
-    colnames(tmp) <- c(paste("from", from, sep = " :"), "to:", 
-        "RESULT")
-    if (progress == TRUE) {
-        close(pb)
-    }
-    return(tmp)
-  }
-}
+#translate from InchI to pubchem CID
+id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
+from<-"InChIKey"
+to<-"PubChem CID"
+
+CTS.getR(id,from,to) #go ahead and google it
+
+
+
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\keyword{ Chemical Translation Service}
+\keyword{CTS}% __ONLY ONE__ keyword per line
+\keyword{InchI}
+\keyword{CID}
