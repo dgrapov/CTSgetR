@@ -1,0 +1,14 @@
+* using log directory 'C:/Users/D/Dropbox/CTSgetR/CTSgetR.Rcheck'
+* using R version 2.15.1 (2012-06-22)
+* using platform: i386-pc-mingw32 (32-bit)
+* using session charset: ISO8859-1
+* checking for file 'CTSgetR/DESCRIPTION' ... OK
+* checking extension type ... Package
+* this is package 'CTSgetR' version '1.0'
+* checking package namespace information ... OK
+* checking package dependencies ... ERROR
+Namespace dependencies not required:
+  'RCurl' 'RJSONIO'
+
+See the information on DESCRIPTION files in the chapter 'Creating R
+packages' of the 'Writing R Extensions' manual.
