@@ -51,6 +51,7 @@ CTS.getR<-function(id,from,to,parallel=FALSE,server="http://cts.fiehnlab.ucdavis
 CTS.translate<-function(server,from,to,id,parallel=FALSE){ #arguably parallel, seems more connection stable than asynchronous
 		#require("RCurl")
 		# results are returned as JSON encoded strings
+		id<-as.character(unlist(id))
 		url<-paste(server,from,to,id,sep="/")
 		url<-gsub("\\ ","%20",url) # fix spaces 
 		
