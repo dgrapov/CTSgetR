@@ -44,7 +44,7 @@ CTSgetR<-function(id,from,to,parallel=FALSE,server="http://cts.fiehnlab.ucdavis.
 		tmp<-do.call("cbind",out)
 		tmp<-cbind(from=id,to=to,result=as.character(unlist(tmp[4,])))
 		colnames(tmp)<-c(paste("from",from,sep=" :"),"to:",to)
-		return(tmp[,3,drop=FALSE])
+		return(data.frame(tmp[,3,drop=FALSE]))
 	}
 	
 
