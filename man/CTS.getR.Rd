@@ -1,5 +1,5 @@
-\name{CTS.getR}
-\alias{CTS.getR}
+\name{CTSgetR}
+\alias{CTSgetR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Tranlate between chemical identifiers.
@@ -27,7 +27,7 @@ Use the Chemical Translation Service (CTS) to translate between the following mo
  ChemBlock 
 }
 \usage{
-CTS.getR(id, from, to, progress = TRUE)
+CTSgetR(id, from, to, progress = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,7 +52,7 @@ a 3 column data frame containing containning:
 from,  to and translated values
 }
 \references{
-http://uranus.fiehnlab.ucdavis.edu:8080/cts-2.0-beta-2/
+https://github.com/dgrapov/CTSgetR
 }
 \author{
 Dmitry Grapov
@@ -72,14 +72,14 @@ Dmitry Grapov
 id<-c(14242, 5760)
 from<-"PubChem CID"
 to<-"InChIKey"
-CTS.getR(id,from,to)
+CTSgetR(id,from,to)
 
 #translate from InchI to pubchem CID
 id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
 from<-"InChIKey"
 to<-"PubChem CID"
 
-CTS.getR(id,from,to) #go ahead and google it
+CTSgetR(id,from,to) #go ahead and google it
 
 
 
