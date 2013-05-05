@@ -1,4 +1,4 @@
-CTS.getR<-function(id,from,to,parallel=FALSE,server="http://cts.fiehnlab.ucdavis.edu/service/convert"){ 
+CTSgetR<-function(id,from,to,parallel=FALSE,server="http://cts.fiehnlab.ucdavis.edu/service/convert"){ 
 		# id = vector of identifiers
 		#to/from =	"Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock"
 		#result is a 3 column data frame of from, to and translated values
