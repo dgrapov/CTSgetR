@@ -17,4 +17,4 @@ library(CTSgetR)
 help(CTSgetR)
 ```
 
-### Check out some [translation examples](https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-Service-in-R).
+### Check out some [translation examples](https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-System-in-R).
