@@ -92,14 +92,13 @@ CTS.translate.async<-function(server,from,to,id){ # sometimes will not work due 
 		url<-paste(server,from,to,id,sep="/")
 		url<-gsub("\\ ","%20",url) # fix spaces 
 		
-		options(RCurlOptions = list(verbose = TRUE,
-                              followlocation = TRUE,
-                              autoreferer = TRUE,
-                              nosignal = TRUE))
-							  				  
-		#out<-getURL(url,  ssl.verifypeer = FALSE) not stable missing some args?
-		con = multiTextGatherer(url)
-		getURIAsynchronous(url, write = con)
+		# options(RCurlOptions = list(verbose = TRUE,
+                              # followlocation = TRUE,
+                              # autoreferer = TRUE,
+                              # nosignal = TRUE))
+		curl = getCurlHandle()					  				  
+		x<-getURL(url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl, followlocation = TRUE) #not stable missing some ar
+		# issue on OSX with R locking up
 }
 
 # get possible translations from CTS
@@ -121,7 +120,7 @@ multi.CTSgetR<-function(id, from, to, limit.values, server) {
 }
 
 test<-function(){
-	id<-rep(c(14242, 5760),300) # PubChem CIDs
+	id<-rep(c(14242, 5760),20) # PubChem CIDs
 	from<-"PubChem CID"
 	to<-"InChIKey"
 	
