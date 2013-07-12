@@ -5,43 +5,27 @@
 Tranlate between chemical identifiers.
 }
 \description{
-Use the Chemical Translation Service (CTS) to translate between the following molecular identifiers: 
- Chemical Name  
- InChIKey  
- InChI Code  
- PubChem CID  
- Pubchem SID  
- ChemDB  
- ZINC  
- Southern Research Institute  
- Specs  
- MolPort  
- ASINEX 
- ChemBank  
- MLSMR  
- Emory University Molecular Libraries Screening  Center  
- ChemSpider  
- DiscoveryGate  
- Ambinter  
- Vitas-M Laboratory  
- ChemBlock 
+Use the Chemical Translation System (CTS) to translate between > 250 of the most common biological database identifiers including: Chemical Name, InChIKey, InChI Code, PubChem CID, Pubchem SID, ChemDB, ChemSpider, Golm Metabolome Database (GMD), BioCyc, ChEBI, CAS, HMDB, KEGG, LipidMAPS.
 }
 \usage{
-CTSgetR(id, from, to, progress = TRUE)
+CTSgetR(id,from,to,parallel,limit.values,server)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{id}{
-a vector of idenitifiers
+matrix or dataframe of idenitifiers to translate
 }
   \item{from}{
-type of object translating from
+single value describing type or databse name describing "id". See CTS.options() for all options.
 }
   \item{to}{
-type of object translating to
+single value describing type or databse name to translate id "to". See CTS.options() for all options.
 }
-  \item{progress}{
-show progress
+  \item{parallel}{
+calculate translations in parallel using multiple CPU cores limit.values
+}
+ \item{limit.values}{
+limit translation returned values to a single value
 }
 }
 \details{
@@ -49,7 +33,7 @@ show progress
 }
 \value{
 a 3 column data frame containing containning:
-from,  to and translated values
+from, to and translated values
 }
 \references{
 https://github.com/dgrapov/CTSgetR
@@ -64,10 +48,9 @@ Dmitry Grapov
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+CTS.options()
 }
 \examples{
-
 #translate from PubChem CID to InChIKey
 id<-c(14242, 5760)
 from<-"PubChem CID"
@@ -78,10 +61,8 @@ CTSgetR(id,from,to)
 id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
 from<-"InChIKey"
 to<-"PubChem CID"
-
-CTSgetR(id,from,to) #go ahead and google it
-
-
+CTSgetR(id,from,to) 
+}
 
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
