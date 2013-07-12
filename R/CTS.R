@@ -96,10 +96,10 @@ CTS.translate.async<-function(server,from,to,id){ # sometimes will not work due 
                               followlocation = TRUE,
                               autoreferer = TRUE,
                               nosignal = TRUE))
-							  				  
-		#out<-getURL(url,  ssl.verifypeer = FALSE) not stable missing some args?
-		con = multiTextGatherer(url)
-		getURIAsynchronous(url, write = con)
+		curl = getCurlHandle()					  				  
+		getURL(url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl) #not stable missing some args
+		# con = multiTextGatherer(url)
+		# getURIAsynchronous(url, write = con)
 }
 
 # get possible translations from CTS
@@ -121,7 +121,7 @@ multi.CTSgetR<-function(id, from, to, limit.values, server) {
 }
 
 test<-function(){
-	id<-rep(c(14242, 5760),300) # PubChem CIDs
+	id<-rep(c(14242, 5760),20) # PubChem CIDs
 	from<-"PubChem CID"
 	to<-"InChIKey"
 	
