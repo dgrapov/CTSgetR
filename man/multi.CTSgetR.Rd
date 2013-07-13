@@ -1,14 +1,15 @@
-\name{CTSgetR}
-\alias{CTSgetR}
+\name{multi.CTSgetR}
+\alias{multi.CTSgetR}
 %- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
-Translate between chemical identifiers.
+Translate between multiple chemical identifiers.
 }
 \description{
 Use the Chemical Translation System (CTS) to translate between > 200 of the most common biological database identifiers including: Chemical Name, InChIKey, InChI Code, PubChem CID, Pubchem SID, ChemDB, ChemSpider, Golm Metabolome Database (GMD), BioCyc, ChEBI, CAS, HMDB, KEGG, LipidMAPS.
 }
 \usage{
-CTSgetR(id,from,to,parallel,async,limit.values,server)
+multi.CTSgetR(id,from,to,...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -19,17 +20,12 @@ vector, matrix or dataframe of idenitifiers to translate
 single value stating databse name which for "id". See CTS.options() for all options.
 }
   \item{to}{
-single value describing identifier or databse name to translate id "to". See CTS.options() for all options.
+a vector of one or more values describing identifiers or database names to translate id "to". See CTS.options() for all options.
 }
-  \item{parallel}{
-format convert JSON output in parallel. Not recommended for queries with < 1000 ids. 
+  \item{...}{
+see CTSgetR options 
 }
-\item{async}{
-make asynchronous web queries, default FALSE. May cause R to hang for OSX.
-}
- \item{limit.values}{
-limit translation returned values to a single value, default is TRUE.
-}
+
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -51,20 +47,12 @@ Dmitry Grapov
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-multi.CTSgetR, CTS.options()
+CTSgetR, CTS.options()
 }
 \examples{
-#translate from PubChem CID to InChIKey
-id<-c(14242, 5760)
+
+id<-c(14242, 5760,1175)
 from<-"PubChem CID"
-to<-"InChIKey"
-CTSgetR(id,from,to)
-
-#translate from InchI to pubchem CID
-id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
-from<-"InChIKey"
-to<-"PubChem CID"
-CTSgetR(id,from,to) 
+to<-c("InChIKey", "BioCyc","HMDB", "KEGG","Chemical Name")
+multi.CTSgetR(id,from,to)
 }
-
-

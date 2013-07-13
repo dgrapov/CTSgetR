@@ -1,4 +1,4 @@
-CTSgetR<-function(id,from,to,parallel=FALSE,async=TRUE,limit.values=TRUE,server="http://cts.fiehnlab.ucdavis.edu/service/convert"){ 
+CTSgetR<-function(id,from,to,parallel=FALSE,async=FALSE,limit.values=TRUE,server="http://cts.fiehnlab.ucdavis.edu/service/convert"){ 
 		# id = vector of identifiers
 		#to/from =	"Chemical Name","InChIKey","InChI Code","PubChem CID","Pubchem SID","ChemDB","ZINC","Southern Research Institute","Specs","MolPort","ASINEX","ChemBank","MLSMR","Emory University Molecular Libraries Screening Center","ChemSpider","DiscoveryGate","Ambinter","Vitas-M Laboratory","ChemBlock"
 		#result is a 3 column data frame of from, to and translated values
@@ -119,10 +119,10 @@ CTS.options<-function(){
 	}
 
 #from one to multiple translations
-multi.CTSgetR<-function(id, from, to, limit.values, server) {
+multi.CTSgetR<-function(id, from, to ,...) {
   obj<-sapply(1:length(to),function (i)
   {  
-    CTSgetR(id,from,to[i])
+    CTSgetR(id,from,to[i],...)
   })
   tmp<-do.call("cbind",obj)
   colnames(obj)<-c(paste("From:",from),"To","Value")
