@@ -99,6 +99,16 @@ CTS.translate.async<-function(server,from,to,id){ # sometimes will not work due 
 		curl = getCurlHandle()					  				  
 		x<-getURL(url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl, followlocation = TRUE) #not stable missing some ar
 		# issue on OSX with R locking up
+
+		options(RCurlOptions = list(verbose = TRUE,
+                              followlocation = TRUE,
+                              autoreferer = TRUE,
+                              nosignal = TRUE))
+		curl = getCurlHandle()					  				  
+		getURL(url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl) #not stable missing some args
+		# con = multiTextGatherer(url)
+		# getURIAsynchronous(url, write = con)
+
 }
 
 # get possible translations from CTS
