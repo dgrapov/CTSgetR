@@ -22,18 +22,18 @@ CTSgetR<-function(id,from,to,parallel=FALSE,async=FALSE,limit.values=TRUE,server
 					} else {
 							if(limit==TRUE) #only return first answer
 							{ 
-								final<-tryCatch(data.frame(RJSONIO::fromJSON(obj))[,1,drop=FALSE],error=function(e){data.frame(matrix("error",nrow=4))})
+								final<-tryCatch(data.frame(RJSONIO::fromJSON(obj))[1,,drop=FALSE],error=function(e){data.frame(matrix("error",ncol=4))})
 							} else {
-								final<-tryCatch(data.frame(RJSONIO::fromJSON(obj)),error=function(e){data.frame(matrix("error",nrow=4))})
-								if(ncol(final)>1) # combine multiple answers in a comma separated string
+								final<-tryCatch(data.frame(RJSONIO::fromJSON(obj)),error=function(e){data.frame(matrix("error",ncol=4))})
+								if(nrow(final)>1) # combine multiple answers in a comma separated string
 									{
-										tmp<-as.matrix(final[,1,drop=F])
-										tmp[4,1]<-paste(as.character(unlist(final[4,])),collapse=",")
-										final<-tmp
+										tmp<-paste(as.matrix(final[,4,drop=F]),collapse=",")
+										final[,4]<-tmp
+										final<-final[1,,drop=FALSE]
 									}
 							}
 					}
-				
+				colnames(final)<-""
 				return(final)	
 			}
 			
@@ -49,14 +49,14 @@ CTSgetR<-function(id,from,to,parallel=FALSE,async=FALSE,limit.values=TRUE,server
 				 
 				out<-lapply(1:length(out),function(i,pb = txtProgressBar(min = 0, max = length(id), style = 3)){
 					setTxtProgressBar(pb, i)
-					.parseJSON(out[i],limit=limit.values)})
+					.parseJSON(obj=out[i],limit=limit.values)})
 			}
 			
 		#parse  into a triple
-		tmp<-do.call("cbind",out)
-		tmp<-cbind(from=id,to=to,result=as.character(unlist(tmp[4,])))
-		colnames(tmp)<-c(paste("from",from,sep=" :"),"to:",to)
-		return(data.frame(tmp[,3,drop=FALSE]))
+		tmp<-do.call("rbind",out)
+		tmp<-as.data.frame(cbind(from=id,result=as.character(unlist(tmp[,4,drop=FALSE]))))
+		colnames(tmp)<-c(from,to)
+		return(data.frame(tmp))
 	}
 
 CTS.translate<-function(server,from,to,id,parallel=FALSE){ #arguably parallel, seems more connection stable than asynchronous
@@ -129,18 +129,3 @@ multi.CTSgetR<-function(id, from, to ,...) {
   obj  
 }
 
-test<-function(){
-	id<-rep(c(14242, 5760),20) # PubChem CIDs
-	from<-"PubChem CID"
-	to<-"InChIKey"
-	
-	start<-Sys.time()
-	x1<-CTSgetR(id,from,to,async=FALSE)
-	ellapsed1<-Sys.time()-start
-	
-	start<-Sys.time()
-	x2<-CTSgetR(id,from,to)
-	ellapsed2<-Sys.time()-start
-	
-	
-}
