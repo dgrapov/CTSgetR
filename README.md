@@ -1,7 +1,7 @@
 CTSgetR
 =======
 
-R interface to the [Chemical Translation Service (CTS)] (http://uranus.fiehnlab.ucdavis.edu:8080/cts-2.0-beta-2/)
+R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
 ```R
 install.packages("devtools")
