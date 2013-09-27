@@ -2,10 +2,10 @@
 \alias{CTSgetR}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Translate between chemical identifiers.
+R interface for the Chemical Translation System
 }
 \description{
-Use the Chemical Translation System (CTS) to translate between > 200 of the most common biological database identifiers including: Chemical Name, InChIKey, InChI Code, PubChem CID, Pubchem SID, ChemDB, ChemSpider, Golm Metabolome Database (GMD), BioCyc, ChEBI, CAS, HMDB, KEGG, LipidMAPS.
+Tools to translate identifiers between > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID, ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS.
 }
 \usage{
 CTSgetR(id,from,to,parallel,async,limit.values,server)
@@ -13,30 +13,31 @@ CTSgetR(id,from,to,parallel,async,limit.values,server)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{id}{
-vector, matrix or dataframe of idenitifiers to translate 
+A vector of metabolite identifiers or names to translate. 
 }
   \item{from}{
-single value stating databse name which for "id". See CTS.options() for all options.
+Database name describing \code{id}. See \code{\link{CTS.options}}.
 }
   \item{to}{
-single value describing identifier or databse name to translate id "to". See CTS.options() for all options.
+Database name to translate \code{id} to. See \code{\link{CTS.options}}.
 }
   \item{parallel}{
-format convert JSON output in parallel. Not recommended for queries with < 1000 ids. 
+Parse results in parallel (defaults to \code{FALSE}).
 }
 \item{async}{
-make asynchronous web queries, default FALSE. May cause R to hang for OSX.
+Carry out web query asynchronously (defaults to \code{FALSE}).
 }
  \item{limit.values}{
-limit translation returned values to a single value, default is TRUE.
+Return a single value or a comma separated string of multiple values (defaults to \code{FALSE}).
+}\ \item{server}{
+Web address for the Chemical Translation System web services (defaults to http://cts.fiehnlab.ucdavis.edu/service/convert).
 }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+One or many metabolite identifiers (\code{id}) of a single database type (\code{from}) are translated to a single database identifier (\code{to}). For one to many translations see \code{\link{multi.CTSgetR}}.
 }
 \value{
-a 3 column data frame containing:
-from, to and translated value
+A 2 column data frame containing from and to translated values.
 }
 \references{
 http://cts.fiehnlab.ucdavis.edu/
@@ -45,13 +46,13 @@ http://cts.fiehnlab.ucdavis.edu/
 Dmitry Grapov
 }
 \note{
-%%  ~~further notes~~
+http://cts.fiehnlab.ucdavis.edu/
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-multi.CTSgetR, CTS.options()
+\code{\link{multi.CTSgetR}}, \code{\link{CTS.options}}
 }
 \examples{
 #translate from PubChem CID to InChIKey
