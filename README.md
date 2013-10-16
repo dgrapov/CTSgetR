@@ -6,8 +6,10 @@ R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucd
 ```R
 install.packages("devtools")
 install.packages("RJSONIO")
-#install.packages("RCurl") 
-library(devtools);library(RJSONIO)#;library(RCurl) 
+install.packages("RCurl") 
+library(devtools)
+library(RJSONIO)
+library(RCurl) 
 install_github(repo = "CTSgetR", username = "dgrapov")
 library(CTSgetR)
 ```
