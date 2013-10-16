@@ -2,7 +2,7 @@
 \alias{CTS.options}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Translate between multiple chemical identifiers.
+Get names of databases available for translation
 }
 \description{
 View a list of >200 available databases for translations including: Chemical Name, InChIKey, InChI Code, PubChem CID, Pubchem SID, ChemDB, ChemSpider, Golm Metabolome Database (GMD), BioCyc, ChEBI, CAS, HMDB, KEGG, LipidMAPS.
@@ -13,10 +13,10 @@ CTS.options()
 %- maybe also 'usage' for other objects documented here.
 
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Use returned values as input for \code{to} and\code{from} for \code{\link{CTSgetR}} and \code{\link{multi.CTSgetR}}.%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-a vector of available database names
+A vector of available database names.
 }
 \references{
 http://cts.fiehnlab.ucdavis.edu/
@@ -31,7 +31,7 @@ Dmitry Grapov
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-CTSgetR, multi.CTSgetR
+\code{\link{CTSgetR}}, \code{\link{multi.CTSgetR}}
 }
 \examples{
 CTS.options()

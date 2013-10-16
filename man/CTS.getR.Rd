@@ -29,7 +29,8 @@ Carry out web query asynchronously (defaults to \code{FALSE}).
 }
  \item{limit.values}{
 Return a single value or a comma separated string of multiple values (defaults to \code{FALSE}).
-}\ \item{server}{
+}
+\item{server}{
 Web address for the Chemical Translation System web services (defaults to http://cts.fiehnlab.ucdavis.edu/service/convert).
 }
 }
@@ -37,7 +38,7 @@ Web address for the Chemical Translation System web services (defaults to http:/
 One or many metabolite identifiers (\code{id}) of a single database type (\code{from}) are translated to a single database identifier (\code{to}). For one to many translations see \code{\link{multi.CTSgetR}}.
 }
 \value{
-A 2 column data frame containing from and to translated values.
+A 2 column data frame containing from and to translated values. Values not found in the database are returned as "error".
 }
 \references{
 http://cts.fiehnlab.ucdavis.edu/
@@ -65,7 +66,13 @@ CTSgetR(id,from,to)
 id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
 from<-"InChIKey"
 to<-"PubChem CID"
-CTSgetR(id,from,to) 
+CTSgetR(id,from,to)
+
+#translate from pubchem CID many chemical name synonyms
+id<- 5950
+from<-"PubChem CID"
+to<-"Chemical Name"
+CTSgetR(id,from,to, limit.values=FALSE) 
 }
 
 

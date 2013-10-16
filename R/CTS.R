@@ -117,12 +117,12 @@ CTS.options<-function(){
 
 #from one to multiple translations
 multi.CTSgetR<-function(id, from, to ,...) {
-  obj<-sapply(1:length(to),function (i)
+  obj<-lapply(1:length(to),function (i)
   {  
-    CTSgetR(id,from,to[i],...)
+    CTSgetR(id,from,to[i],...)[,2,drop=FALSE]
   })
-  tmp<-do.call("cbind",obj)
-  colnames(obj)<-c(paste("From:",from),"To","Value")
-  obj  
+  tmp<-cbind(id,do.call("cbind",obj))
+  colnames(tmp)<-c(from,to)
+  tmp  
 }
 
