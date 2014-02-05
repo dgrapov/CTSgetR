@@ -126,3 +126,7 @@ multi.CTSgetR<-function(id, from, to ,...) {
   tmp  
 }
 
+# #test
+# id=c("C15973","C00026")
+# from="KEGG" 
+# to="PubChem CID"
