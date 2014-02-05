@@ -1,4 +1,4 @@
-![CTSgetR]()
+![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/ctsgetR_logo.png)
 
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
