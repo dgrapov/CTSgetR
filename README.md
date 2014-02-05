@@ -2,6 +2,7 @@
 
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
+### Installation
 ```R
 install.packages("devtools")
 install.packages("RJSONIO")
