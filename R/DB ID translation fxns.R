@@ -90,77 +90,77 @@ NametoPubChem<-function(name,ID="cids", limit=FALSE){
 	return(res)
 }
 
-# get IDs (only KEGG and PubChem) from CTS based on synonym and verify using web services
-CTSgetR.verify<-function(id,to=c("KEGG","PubChem CID"),max.distance=.5){
-	library(vwr) # string distance
-	library(CTSgetR) # translations
+# # get IDs (only KEGG and PubChem) from CTS based on synonym and verify using web services
+# CTSgetR.verify<-function(id,to=c("KEGG","PubChem CID"),max.distance=.5){
+	# library(vwr) # string distance
+	# library(CTSgetR) # translations
 	
-	IDS<-CTSgetR(id,from="Chemical Name",to,limit.values=FALSE)
+	# IDS<-CTSgetR(id,from="Chemical Name",to,limit.values=FALSE)
 	
-	if(to=="KEGG"){
-		#verify KEGG id by translating to name
-		big.l<-strsplit(fixlc(IDS[,2]),",")
-		k.names<-lapply(1:length(big.l),function(i){
-			KEGGtoNames(id=big.l[[i]],all.values=TRUE,progress=TRUE)
-		})
+	# if(to=="KEGG"){
+		# #verify KEGG id by translating to name
+		# big.l<-strsplit(fixlc(IDS[,2]),",")
+		# k.names<-lapply(1:length(big.l),function(i){
+			# KEGGtoNames(id=big.l[[i]],all.values=TRUE,progress=TRUE)
+		# })
 		
-		#match on name
-		matched.kid<-do.call("rbind",lapply(1:length(id),function(i){
-			met<-id[i]
-			tmp<-k.names[[i]]
-			matches<-do.call("rbind",lapply(1:nrow(tmp),function(j){
-					tmp.names<-strsplit(as.matrix(tmp[j,"names",drop=F]),";")[[1]]
-					match<-agrep(met,tmp.names,max.distance,ignore.case = TRUE) # very loose matching could go right to lev.d distance?
+		# #match on name
+		# matched.kid<-do.call("rbind",lapply(1:length(id),function(i){
+			# met<-id[i]
+			# tmp<-k.names[[i]]
+			# matches<-do.call("rbind",lapply(1:nrow(tmp),function(j){
+					# tmp.names<-strsplit(as.matrix(tmp[j,"names",drop=F]),";")[[1]]
+					# match<-agrep(met,tmp.names,max.distance,ignore.case = TRUE) # very loose matching could go right to lev.d distance?
 					
-					if(length(match)>0){
-					dist<-levenshtein.damerau.distance(met, tmp.names[match])
-					data.frame(KID=as.matrix(tmp[j,"KEGG.id"]),name=tmp.names[match],distance=dist)} else {data.frame(KID=tmp[j,"KEGG.id",drop=T],name="error",distance=NA)}
-				}))
+					# if(length(match)>0){
+					# dist<-levenshtein.damerau.distance(met, tmp.names[match])
+					# data.frame(KID=as.matrix(tmp[j,"KEGG.id"]),name=tmp.names[match],distance=dist)} else {data.frame(KID=tmp[j,"KEGG.id",drop=T],name="error",distance=NA)}
+				# }))
 			
-			#choose compounds over drugs
-			if(is.null(matches)){return(data.frame(KID="error",name="error"))} else {tmp<-matches}
-			if(nrow(matches)>1){
-				tmp<-matches[which.min(matches$distance),]
-				#check for compd and drug entries and select compound
-				if(nrow(tmp)>1){
-					tmp<-fixlc(matches[,1])
-					id<-grep("C",tmp)[1] #select cmpd
-					tmp<-tmp[id,tmp]
-				}
-			} 	
-			return(tmp[,1:2,drop=FALSE])	
-		}))
-		matched.kid$start.name<-id
-		results<-matched.kid # should standardize colnames?
+			# #choose compounds over drugs
+			# if(is.null(matches)){return(data.frame(KID="error",name="error"))} else {tmp<-matches}
+			# if(nrow(matches)>1){
+				# tmp<-matches[which.min(matches$distance),]
+				# #check for compd and drug entries and select compound
+				# if(nrow(tmp)>1){
+					# tmp<-fixlc(matches[,1])
+					# id<-grep("C",tmp)[1] #select cmpd
+					# tmp<-tmp[id,tmp]
+				# }
+			# } 	
+			# return(tmp[,1:2,drop=FALSE])	
+		# }))
+		# matched.kid$start.name<-id
+		# results<-matched.kid # should standardize colnames?
 		
-	}
+	# }
 	
-	if(to=="PubChem CID"){
-		#to verify CIDS use PUG
-		big.l<-unlist(strsplit(fixlc(IDS[,2]),","))
-		len<-sapply(strsplit(fixlc(IDS[,2]),","),length)
-		big.l<-data.frame(name=rep(id,times=len),id=big.l)
-		met.names<-unlist(IDS[,1])
-		#need to match index for splitting used down lower
-		# avoid all errors getting collected by enumerating?
-		tmp<-fixlc(IDS[,2])
-		er<-tmp=="error"
-		tmp[er]<-paste(tmp[er],1:sum(er))
-		big.l$id<-unlist(strsplit(tmp,","))
-		c.names<-CIDtoNames(cid=big.l$id) # vectorized
-		#need to group multiple CIDs for one metabolite for word matching
-		#get best matches for each id
-		names<-fixlc(c.names[,2])
-		matched.cid<-do.call("rbind",lapply(1:length(id),function(i){
-			met<-id[i]
-			dist<-levenshtein.damerau.distance(met,names)
-			data.frame(c.names[which.min(dist)[1],],start.name=met) # control what distance is acceptable , rewrite above to vectorized form
-		}))	
+	# if(to=="PubChem CID"){
+		# #to verify CIDS use PUG
+		# big.l<-unlist(strsplit(fixlc(IDS[,2]),","))
+		# len<-sapply(strsplit(fixlc(IDS[,2]),","),length)
+		# big.l<-data.frame(name=rep(id,times=len),id=big.l)
+		# met.names<-unlist(IDS[,1])
+		# #need to match index for splitting used down lower
+		# # avoid all errors getting collected by enumerating?
+		# tmp<-fixlc(IDS[,2])
+		# er<-tmp=="error"
+		# tmp[er]<-paste(tmp[er],1:sum(er))
+		# big.l$id<-unlist(strsplit(tmp,","))
+		# c.names<-CIDtoNames(cid=big.l$id) # vectorized
+		# #need to group multiple CIDs for one metabolite for word matching
+		# #get best matches for each id
+		# names<-fixlc(c.names[,2])
+		# matched.cid<-do.call("rbind",lapply(1:length(id),function(i){
+			# met<-id[i]
+			# dist<-levenshtein.damerau.distance(met,names)
+			# data.frame(c.names[which.min(dist)[1],],start.name=met) # control what distance is acceptable , rewrite above to vectorized form
+		# }))	
 		
 				
-		}))	
-		return(results)
-	}
+		# }))	
+		# return(results)
+	# }
 	
 #check synonym via chemify http://cts.fiehnlab.ucdavis.edu/chemify/rest
 NametoInchI<-function(name){
@@ -187,18 +187,18 @@ NametoInchI<-function(name){
 	return(data.frame(id=unlist(res$result),name=unlist(res$query), start.name=name))	
 }
 
-#test
-{
-#name to InChI
-name<-fixlc(ids)
-id<-NametoInchI(name)
+# #test
+# {
+# #name to InChI
+# name<-fixlc(ids)
+# id<-NametoInchI(name)
 
-trans<-multi.CTSgetR(fixlc(id$id),from="InChIKey", to=c("KEGG","PubChem CID"))
-#translate InChI to KEGG/CID
+# trans<-multi.CTSgetR(fixlc(id$id),from="InChIKey", to=c("KEGG","PubChem CID"))
+# #translate InChI to KEGG/CID
 
-#use modified chemify query to get KEGG/CID
-KID<-NametoKEGG(id$name)
-CID<-NametoPubChem(name=id$name,ID="cids",limit=T)
+# #use modified chemify query to get KEGG/CID
+# KID<-NametoKEGG(id$name)
+# CID<-NametoPubChem(name=id$name,ID="cids",limit=T)
 
-res<-data.frame(KID,CID)
-}
+# res<-data.frame(KID,CID)
+# }
