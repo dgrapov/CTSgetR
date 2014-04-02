@@ -1,0 +1,55 @@
+name=c("udp glcnac","threonine")
+library(RCurl)#
+	library(RJSONIO)#
+	url<-paste0("http://cts.fiehnlab.ucdavis.edu/chemify/rest/identify/",gsub(" ","%20",name))#
+	content<-tryCatch(lapply(url,getURL, ssl.verifypeer = FALSE),error=function(e){character()})#
+	translate<-function(obj){#
+		lapply(1:length(obj), function(i){#
+		tmp<-obj[[i]]#
+		res<-do.call("rbind",RJSONIO::fromJSON(tmp)	)#
+		})#
+	}
+res<-lapply(content,translate)
+res
+data.frame(res)
+res<-matrix(unlist(lapply(content,translate)),ncol=6,byrow=TRUE)
+res
+res<-matrix(unlist(lapply(content,translate)),ncol=6)
+res
+unlist(lapply(content,translate))
+res<-matrix(unlist(lapply(content,translate)),ncol=5)
+res
+x<-unlist(lapply(content,translate))
+length(x)
+res<-matrix(unlist(lapply(content,translate)),ncol=7)
+res
+res<-matrix(unlist(lapply(content,translate)),ncol=7,byrow=TRUE)
+res
+res<-t(matrix(unlist(lapply(content,translate)),ncol=7,byrow=TRUE))
+res
+res<-t(matrix(unlist(lapply(content,translate)),ncol=7))
+res
+x
+x<-lapply(content,translate)
+str(x)
+res<-t(matrix(unlist(lapply(content,translate)),ncol=6))
+res
+obj
+obj<-content[[i]]
+obj<-content[[1]]
+tmp<-obj[[i]]#
+		res<-do.call("rbind",RJSONIO::fromJSON(tmp)	)
+i<-1
+tmp<-obj[[i]]#
+		res<-do.call("rbind",RJSONIO::fromJSON(tmp)	)
+res
+dim(res)
+data.frame(res)
+translate<-function(obj){#
+		lapply(1:length(obj), function(i){#
+		tmp<-obj[[i]]#
+		res<-data.frame(do.call("rbind",RJSONIO::fromJSON(tmp)	))#
+		})#
+	}
+res<-t(matrix(unlist(lapply(content,translate)),ncol=6))
+res
