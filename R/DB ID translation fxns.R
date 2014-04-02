@@ -47,7 +47,7 @@ NametoKEGG<-function(name){
 	return(res[back,])	
 }
 
-#CID to Name
+#CID to Name (Should make general PubChemtoName and sid support)
 CIDtoName<-function(cid){
 	library(RCurl)
 	url<-paste0("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/",cid,"/synonyms/TXT")
