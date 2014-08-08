@@ -3,7 +3,7 @@
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
 ### Installation
-```R
+```r
 library(devtools) # install.packages("devtools") if missing
 install_github(repo = "CTSgetR", username = "dgrapov")
 library(CTSgetR)
@@ -15,7 +15,8 @@ help(CTSgetR)
 ```
 
 ### Example usage
-```r
+```{r}
+library(CTSgetR)
 #translate from chemical name to InchiKey
 id<-"alanine"
 from<-"Chemical Name"
@@ -37,3 +38,4 @@ CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
 
 
 ### Check out some more [translation examples](https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-System-in-R).
+

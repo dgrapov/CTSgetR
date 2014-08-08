@@ -13,7 +13,7 @@ CTS.options()
 %- maybe also 'usage' for other objects documented here.
 
 \details{
-Use returned values as input for \code{to} and\code{from} for \code{\link{CTSgetR}} and \code{\link{multi.CTSgetR}}.%%  ~~ If necessary, more details than the description above ~~
+Use returned values as input for \code{to} and \code{from} for \code{\link[CTSgetR]{CTSgetR}} and \code{\link[CTSgetR]{multi.CTSgetR}}.%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 A vector of available database names.
@@ -31,7 +31,7 @@ Dmitry Grapov
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{CTSgetR}}, \code{\link{multi.CTSgetR}}
+\code{\link[CTSgetR]{CTSgetR}}, \code{\link[CTSgetR]{multi.CTSgetR}}
 }
 \examples{
 CTS.options()

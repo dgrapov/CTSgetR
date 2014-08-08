@@ -35,7 +35,7 @@ Web address for the Chemical Translation System web services (defaults to http:/
 }
 }
 \details{
-One or many metabolite identifiers (\code{id}) of a single database type (\code{from}) are translated to a single database identifier (\code{to}). For one to many translations see \code{\link{multi.CTSgetR}}.
+One or many metabolite identifiers (\code{id}) of a single database type (\code{from}) are translated to a single database identifier (\code{to}). For one to many translations see \code{\link[CTSgetR]{multi.CTSgetR}}.
 }
 \value{
 A 2 column data frame containing from and to translated values. Values not found in the database are returned as "error".
@@ -56,23 +56,23 @@ http://cts.fiehnlab.ucdavis.edu/
 \code{\link{multi.CTSgetR}}, \code{\link{CTS.options}}
 }
 \examples{
-#translate from PubChem CID to InChIKey
-id<-c(14242, 5760)
-from<-"PubChem CID"
-to<-"InChIKey"
-CTSgetR(id,from,to)
-
-#translate from InchI to pubchem CID
-id<- "ZPUCINDJVBIVPJ-LJISPDSOSA-N"
-from<-"InChIKey"
+#translate between KEGG and PubChem CIDs
+id<-c("C15973","C00026","C05381","C15972","C00091","C00042","C05379","C00311","C00036","C00024","C00149","C00417","C00158","C00022","C05125","C16254","C00122","C16255","C00074")
+from<-"KEGG" 
 to<-"PubChem CID"
 CTSgetR(id,from,to)
 
-#translate from pubchem CID many chemical name synonyms
-id<- 5950
-from<-"PubChem CID"
-to<-"Chemical Name"
-CTSgetR(id,from,to, limit.values=FALSE) 
+#asynchronous query of CTS, for large queries
+#use \code{async.limit} to not overwhelm the server
+CTSgetR(id,from,to,async=TRUE,async.limit=100) 
+
+#translate from InchiKey to chemical name and allow multiple return values
+id <- c("QNAYBMKLOCPYGJ-REOHCLBHSA-N")
+from <- "InChIKey"
+to <- "Chemical Name"
+CTSgetR(id,from,to,limit.values=FALSE)
+
+
 }
 
 

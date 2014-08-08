@@ -31,7 +31,7 @@ See \code{\link{CTSgetR}} options.
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-A 2 column data frame containing from and to translated values. Values not found in the database are returned as "error".
+A data frame containing from and to translated values. Values not found in the database are returned as "".
 }
 \references{
 http://cts.fiehnlab.ucdavis.edu/
@@ -46,13 +46,12 @@ Dmitry Grapov
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-\code{\link{CTSgetR}}
+\code{\link[CTSgetR]{CTSgetR}}
 }
 \examples{
-
-id<-c(14242, 5760,1175)
+id<-c(14242, 5760, 1175)
 from<-"PubChem CID"
-to<-c("InChIKey", "BioCyc","HMDB", "KEGG")
+to<-c("InChIKey", "BioCyc","Human Metabolome Database", "KEGG")
 multi.CTSgetR(id,from,to)
 
 }

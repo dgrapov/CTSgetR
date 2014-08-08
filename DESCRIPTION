@@ -1,7 +1,7 @@
 Package: CTSgetR
 Type: Package
 Title: Translation between chemical identifiers using the Chemical Translation System (CTS)
-Version: 1.0
+Version: 1.1
 Date: 2013-04-20
 Author: Dmitry Grapov
 Maintainer: <dgrapov@gmail.com>
