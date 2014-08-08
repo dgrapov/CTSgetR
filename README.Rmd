@@ -15,7 +15,7 @@ help(CTSgetR)
 ```
 
 ### Example usage
-```{r}
+```{r,message=FALSE}
 library(CTSgetR)
 #translate from chemical name to InchiKey
 id<-"alanine"
@@ -33,7 +33,7 @@ multi.CTSgetR(id,from,to,progress=FALSE)
 id<-c("446220")
 from<-"PubChem CID"
 to<- c("Chemical Name")
-CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
+CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)[,2]
 ```
 
 
