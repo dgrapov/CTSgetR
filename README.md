@@ -5,6 +5,7 @@ R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucd
 ### Installation
 ```r
 library(devtools) # install.packages("devtools") if missing
+library(jsonlite) # install.packages("jsonlite")
 install_github(repo = "CTSgetR", username = "dgrapov")
 library(CTSgetR)
 ```
