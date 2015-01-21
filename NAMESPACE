@@ -1,3 +1,4 @@
 exportPattern("^[[:alpha:]]+")
 export(CTSgetR,CTS.options,multi.CTSgetR,KEGGtoName,NametoKEGG,CIDtoName,NametoPubChem,NametoInchI)
-import(RCurl,jsonlite)
+import(RCurl)
+import(jsonlite)
