@@ -4,7 +4,7 @@ CTSgetR<-function(id,from,to,async=FALSE,limit.values=TRUE,progress=TRUE,server=
 	if(!to%in%opts|!from%in%opts) {
 	
 	stop(paste0("The supplied to or from name is not in the list of available options.","\n",
-	"Did you mean from = '", opts[agrep(from,opts,ignore.case = TRUE)],"' and to = '",opts[agrep(to,opts,ignore.case = TRUE)],"'?", "\n",
+	"Did you mean from = '", opts[agrep(from,opts,ignore.case = TRUE)],"' and to = '",paste(opts[agrep(to,opts,ignore.case = TRUE)],collapse=","),"'?", "\n",
 	"See CTS.options() for all available options.","\n"))
 	}
 
@@ -59,8 +59,7 @@ CTS.translate<-function(server,from,to,id,progress=TRUE){ #arguably parallel, se
 		#require("RCurl")
 		# results are returned as JSON encoded strings
 		id<-as.character(unlist(id))
-		url<-paste(server,from,to,id,sep="/")
-		url<-gsub("\\ ","%20",url) # fix spaces 
+		url<-paste(server,URLencode(from),URLencode(to),URLencode(id),sep="/") # seperate encoding because can have forward slash in args
 		if(progress) pb <- txtProgressBar(min = 0, max = length(id), style = 3)
 		content<-lapply(1:length(id), function(i)
 			{
@@ -77,9 +76,7 @@ CTS.translate.async<-function(server,from,to,id,async.limit=100,...){
 		# results are returned as JSON encoded strings
 		# limit controls the maximum number of request per call to the server
 		id<-as.character(unlist(id))
-		url<-paste(server,from,to,id,sep="/")
-		url<-gsub("\\ ","%20",url) # fix spaces 
-		
+		url<-paste(server,URLencode(from),URLencode(to),URLencode(id),sep="/") # seperate encoding because can have forward slash in args
 	
 		options(RCurlOptions = list(verbose = TRUE,
                               followlocation = TRUE,
