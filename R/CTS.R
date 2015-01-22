@@ -59,7 +59,7 @@ CTS.translate<-function(server,from,to,id,progress=TRUE){ #arguably parallel, se
 		#require("RCurl")
 		# results are returned as JSON encoded strings
 		id<-as.character(unlist(id))
-		url<-paste(server,URLencode(from),URLencode(to),URLencode(id),sep="/") # seperate encoding because can have forward slash in args
+		url<-paste(server,curlEscape(from),curlEscape(to),curlEscape(id),sep="/") # seperate encoding because can have forward slash in args
 		if(progress) pb <- txtProgressBar(min = 0, max = length(id), style = 3)
 		content<-lapply(1:length(id), function(i)
 			{
@@ -76,7 +76,7 @@ CTS.translate.async<-function(server,from,to,id,async.limit=100,...){
 		# results are returned as JSON encoded strings
 		# limit controls the maximum number of request per call to the server
 		id<-as.character(unlist(id))
-		url<-paste(server,URLencode(from),URLencode(to),URLencode(id),sep="/") # seperate encoding because can have forward slash in args
+		url<-paste(server,curlEscape(from),curlEscape(to),curlEscape(id),sep="/") # seperate encoding because can have forward slash in args
 	
 		options(RCurlOptions = list(verbose = TRUE,
                               followlocation = TRUE,
