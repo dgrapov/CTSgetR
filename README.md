@@ -1,3 +1,5 @@
+[![paypal](https://raw.githubusercontent.com/dgrapov/CDS/gh-pages/www/images/donate.png)](http://createdatasol.com/)
+
 ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
 
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
