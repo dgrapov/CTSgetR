@@ -1,3 +1,0 @@
-exportPattern("^[[:alpha:]]+")
-export(CTS.getR)
-import(RCurl,RJSONIO)
