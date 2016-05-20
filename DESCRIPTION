@@ -8,3 +8,4 @@ Maintainer: <dgrapov@gmail.com>
 Description: Translate between > 200 of the most common biological databases identifiers.
 License: TBA
 Imports: RCurl, jsonlite, KEGGREST, vwr, RJSONIO, utils
+biocViews: Metabolomics
