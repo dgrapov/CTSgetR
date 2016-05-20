@@ -1,6 +1,5 @@
 \name{CTSgetR-package}
 \alias{CTSgetR-package}
-\alias{CTSgetR}
 \docType{package}
 \title{
 R interface to the Chemical Translation System (CTS)
@@ -23,16 +22,7 @@ License: \tab TBA\cr
 Dmitry Grapov
 <dgrapov@ucdavis.edu>
 }
-\references{
 
-}
 %~~ Optionally other standard keywords, one per line, from file ~~
 %~~ KEYWORDS in the R documentation directory ~~
 \keyword{Chemical Translation System}
-\seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
-}
-\examples{
-~~ simple examples of the most important functions ~~
-}

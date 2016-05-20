@@ -25,11 +25,8 @@ Database name to translate \code{id} to. See \code{\link{CTS.options}}.
   \item{...}{
 See \code{\link{CTSgetR}} options. 
 }
+}
 
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 A data frame containing from and to translated values. Values not found in the database are returned as "".
 }
@@ -39,11 +36,6 @@ http://cts.fiehnlab.ucdavis.edu/
 \author{
 Dmitry Grapov
 }
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 \code{\link[CTSgetR]{CTSgetR}}

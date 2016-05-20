@@ -24,9 +24,6 @@ http://cts.fiehnlab.ucdavis.edu/
 \author{
 Dmitry Grapov
 }
-\note{
-%%  ~~further notes~~
-}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 

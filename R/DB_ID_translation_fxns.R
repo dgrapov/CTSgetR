@@ -1,6 +1,6 @@
 #convert KEGG id to chemical name
 KEGGtoName<-function(id,all.values=FALSE,progress=TRUE){
-	library(KEGGREST)
+
 	#should vectorize
 	if(progress){pb = txtProgressBar(min = 0, max = length(id), style = 3)}
 	results<-do.call("rbind",lapply(1:length(id),function(i)
@@ -50,7 +50,7 @@ NametoKEGG<-function(name){
 
 #CID to Name (Should make general PubChemtoName and sid support)
 CIDtoName<-function(cid){
-	library(RCurl)
+
 	url<-paste0("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/",cid,"/synonyms/TXT")
 	content<-tryCatch(getURL(url, ssl.verifypeer = FALSE),error=function(e){character()})
 	res<-unlist(strsplit(content,"\n"))
@@ -63,7 +63,7 @@ CIDtoName<-function(cid){
 
 #going from name to CID 
 NametoPubChem<-function(name,ID="cids", limit=FALSE){
-	library(RCurl)
+
 	url<-paste0("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/",gsub(" ","%20",name),"/",ID,"/TXT")
 	content<-tryCatch(getURL(url, ssl.verifypeer = FALSE),error=function(e){character()})
 	res<-unlist(strsplit(content,"\n"))
@@ -107,7 +107,7 @@ getIDEOM<-function(id,from,to,word.dist=0,agrep.dist=.15,progress=TRUE, DB = NUL
 	#avoid duplicates<
 	id<-make.unique(id)
 	
-	library(vwr)
+
 	if(is.null(DB)){
 			DB<-IDEOMgetR()
 		} 
@@ -157,8 +157,8 @@ getIDEOM<-function(id,from,to,word.dist=0,agrep.dist=.15,progress=TRUE, DB = NUL
 
 #check synonym via chemify http://cts.fiehnlab.ucdavis.edu/chemify/rest
 NametoInchI<-function(name,progress=TRUE){
-	library(RCurl)
-	library(RJSONIO)
+
+
 	url<-paste0("http://cts.fiehnlab.ucdavis.edu/chemify/rest/identify/",gsub("/","%2F",gsub(" ","%20",name)))
 	if(progress){;message(cat("Getting Keys from CTS \n"));pb = txtProgressBar(min = 0, max = length(url), style = 3)}
 	content<-lapply(1:length(url),function(i){

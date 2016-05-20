@@ -56,7 +56,7 @@ CTSgetR<-function(id,from,to,async=FALSE,limit.values=TRUE,progress=TRUE,server=
 }
 	
 CTS.translate<-function(server,from,to,id,progress=TRUE){ #arguably parallel, seems more connection stable than asynchronous
-		#require("RCurl")
+
 		# results are returned as JSON encoded strings
 		id<-as.character(unlist(id))
 		url<-paste(server,curlEscape(from),curlEscape(to),curlEscape(id),sep="/") # seperate encoding because can have forward slash in args
@@ -72,7 +72,7 @@ CTS.translate<-function(server,from,to,id,progress=TRUE){ #arguably parallel, se
 
 #asynchronous, need to debug
 CTS.translate.async<-function(server,from,to,id,async.limit=100,...){ 
-		require("RCurl")
+
 		# results are returned as JSON encoded strings
 		# limit controls the maximum number of request per call to the server
 		id<-as.character(unlist(id))
