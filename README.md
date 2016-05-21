@@ -3,9 +3,10 @@
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
 ### Installation
+
 ```r
 library(devtools) # install.packages("devtools") if missing
-install_github(repo = "CTSgetR", username = "dgrapov")
+install_github(repo = "CTSgetR", username = "dgrapov",ref="simple")
 library(CTSgetR)
 ```
 
