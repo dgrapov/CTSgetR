@@ -7,3 +7,4 @@ Author: Dmitry Grapov
 Maintainer: <dgrapov@gmail.com>
 Description: Translate between > 200 of the most common biological databases identifiers.
 License: TBA
+Suggests: testthat
