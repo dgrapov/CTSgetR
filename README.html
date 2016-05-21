@@ -166,22 +166,29 @@ id&lt;-<span class="kw">c</span>(<span class="st">&quot;DMULVCHRPCFFGV-UHFFFAOYS
 from&lt;-<span class="st">&quot;InChIKey&quot;</span>
 to&lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Chemical Name&quot;</span>, <span class="st">&quot;PubChem CID&quot;</span>, <span class="st">&quot;KEGG&quot;</span>,<span class="st">&quot;Human Metabolome Database&quot;</span>)
 <span class="kw">multi.CTSgetR</span>(id,from,to,<span class="dt">progress=</span><span class="ot">FALSE</span>)</code></pre></div>
-<pre><code>##                      InChIKey Chemical Name PubChem CID   KEGG
-## 1 DMULVCHRPCFFGV-UHFFFAOYSA-N                      6089 C08302
-## 2 ZPUCINDJVBIVPJ-LJISPDSOSA-N                    446220 C01416
-## 3 ZAGRKAFMISFKIO-QMTHXVAHSA-N                  11861108       
-##   Human Metabolome Database
-## 1                 HMDB05973
-## 2                          
-## 3</code></pre>
+<pre><code>##                      InChIKey
+## 1 DMULVCHRPCFFGV-UHFFFAOYSA-N
+## 2 ZPUCINDJVBIVPJ-LJISPDSOSA-N
+## 3 ZAGRKAFMISFKIO-QMTHXVAHSA-N
+##                                                                          Chemical Name
+## 1                                                1H-Indole-3-ethanamine, N,N-dimethyl-
+## 2 Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
+## 3                       Ergoline-8-carboxylic acid, 9,10-didehydro-6-methyl-, (8beta)-
+##   PubChem CID   KEGG Human Metabolome Database
+## 1        6089 C08302                 HMDB05973
+## 2      446220 C01416                          
+## 3    11861108</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#return all possible results for the translation between &quot;PubChem CID&quot; and &quot;Chemical Name&quot;</span>
 id&lt;-<span class="kw">c</span>(<span class="st">&quot;446220&quot;</span>)
 from&lt;-<span class="st">&quot;PubChem CID&quot;</span>
 to&lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Chemical Name&quot;</span>)
-<span class="kw">CTSgetR</span>(id,from,to,<span class="dt">progress=</span><span class="ot">FALSE</span>,<span class="dt">limit.values=</span><span class="ot">FALSE</span>)[,<span class="dv">2</span>]</code></pre></div>
-<pre><code>## [1] Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate               
-## [2] 8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-
-## 2 Levels: Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate ...</code></pre>
+<span class="kw">CTSgetR</span>(id,from,to,<span class="dt">progress=</span><span class="ot">FALSE</span>,<span class="dt">limit.values=</span><span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>##   PubChem CID
+## 1      446220
+## 2      446220
+##                                                                                         Chemical Name
+## 1                Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
+## 2 8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-</code></pre>
 </div>
 <div id="check-out-some-more-translation-examples." class="section level3">
 <h3>Check out some more <a href="https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-System-in-R">translation examples</a>.</h3>

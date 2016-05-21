@@ -40,7 +40,7 @@ multi.CTSgetR(id,from,to,progress=FALSE)
 id<-c("446220")
 from<-"PubChem CID"
 to<- c("Chemical Name")
-CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)[,2]
+CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
 ```
 
 

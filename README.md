@@ -40,14 +40,18 @@ multi.CTSgetR(id,from,to,progress=FALSE)
 ```
 
 ```
-##                      InChIKey Chemical Name PubChem CID   KEGG
-## 1 DMULVCHRPCFFGV-UHFFFAOYSA-N                      6089 C08302
-## 2 ZPUCINDJVBIVPJ-LJISPDSOSA-N                    446220 C01416
-## 3 ZAGRKAFMISFKIO-QMTHXVAHSA-N                  11861108       
-##   Human Metabolome Database
-## 1                 HMDB05973
-## 2                          
-## 3
+##                      InChIKey
+## 1 DMULVCHRPCFFGV-UHFFFAOYSA-N
+## 2 ZPUCINDJVBIVPJ-LJISPDSOSA-N
+## 3 ZAGRKAFMISFKIO-QMTHXVAHSA-N
+##                                                                          Chemical Name
+## 1                                                1H-Indole-3-ethanamine, N,N-dimethyl-
+## 2 Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
+## 3                       Ergoline-8-carboxylic acid, 9,10-didehydro-6-methyl-, (8beta)-
+##   PubChem CID   KEGG Human Metabolome Database
+## 1        6089 C08302                 HMDB05973
+## 2      446220 C01416                          
+## 3    11861108
 ```
 
 ```r
@@ -55,13 +59,16 @@ multi.CTSgetR(id,from,to,progress=FALSE)
 id<-c("446220")
 from<-"PubChem CID"
 to<- c("Chemical Name")
-CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)[,2]
+CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
 ```
 
 ```
-## [1] Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate               
-## [2] 8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-
-## 2 Levels: Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate ...
+##   PubChem CID
+## 1      446220
+## 2      446220
+##                                                                                         Chemical Name
+## 1                Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
+## 2 8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-
 ```
 
 
