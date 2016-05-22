@@ -1,8 +1,8 @@
 Package: CTSgetR
 Type: Package
 Title: Translation between chemical identifiers using the Chemical Translation System (CTS)
-Version: 1.1
-Date: 2013-04-20
+Version: 1.2
+Date: 2016-05-21
 Author: Dmitry Grapov
 Maintainer: <dgrapov@gmail.com>
 Description: Translate between > 200 of the most common biological databases identifiers.

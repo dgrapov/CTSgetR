@@ -10,7 +10,7 @@ output:
 R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
 
 ### Installation
-```{r,message=FALSE,warning=FALSE}
+```{r,eval=FALSE, message=FALSE,warning=FALSE}
 library(devtools) # install.packages("devtools") if missing
 install_github(repo = "CTSgetR", username = "dgrapov",ref="simple")
 library(CTSgetR)
@@ -30,17 +30,12 @@ from<-"Chemical Name"
 to<-"InChIKey"
 CTSgetR(id,from,to,progress=FALSE)
 
-#translate from "InChIKey" to multiple identifiers
+#translate from one to many identifiers 
 id<-c("DMULVCHRPCFFGV-UHFFFAOYSA-N","ZPUCINDJVBIVPJ-LJISPDSOSA-N","ZAGRKAFMISFKIO-QMTHXVAHSA-N")
 from<-"InChIKey"
 to<- c("Chemical Name", "PubChem CID", "KEGG","Human Metabolome Database")
-multi.CTSgetR(id,from,to,progress=FALSE)
+CTSgetR(id,from,to,progress=FALSE,limit.values = FALSE)
 
-#return all possible results for the translation between "PubChem CID" and "Chemical Name"
-id<-c("446220")
-from<-"PubChem CID"
-to<- c("Chemical Name")
-CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
 ```
 
 

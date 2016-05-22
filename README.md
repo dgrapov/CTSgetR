@@ -27,48 +27,51 @@ CTSgetR(id,from,to,progress=FALSE)
 ```
 
 ```
-##   Chemical Name                    InChIKey
-## 1       alanine QNAYBMKLOCPYGJ-REOHCLBHSA-N
+##   fromIdentifier searchTerm toIdentifier                       value
+## 1  Chemical Name    alanine     InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
 ```
 
 ```r
-#translate from "InChIKey" to multiple identifiers
+#translate from one to many identifiers 
 id<-c("DMULVCHRPCFFGV-UHFFFAOYSA-N","ZPUCINDJVBIVPJ-LJISPDSOSA-N","ZAGRKAFMISFKIO-QMTHXVAHSA-N")
 from<-"InChIKey"
 to<- c("Chemical Name", "PubChem CID", "KEGG","Human Metabolome Database")
-multi.CTSgetR(id,from,to,progress=FALSE)
+CTSgetR(id,from,to,progress=FALSE,limit.values = FALSE)
 ```
 
 ```
-##                      InChIKey
-## 1 DMULVCHRPCFFGV-UHFFFAOYSA-N
-## 2 ZPUCINDJVBIVPJ-LJISPDSOSA-N
-## 3 ZAGRKAFMISFKIO-QMTHXVAHSA-N
-##                                                                          Chemical Name
-## 1                                                1H-Indole-3-ethanamine, N,N-dimethyl-
-## 2 Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
-## 3                       Ergoline-8-carboxylic acid, 9,10-didehydro-6-methyl-, (8beta)-
-##   PubChem CID   KEGG Human Metabolome Database
-## 1        6089 C08302                 HMDB05973
-## 2      446220 C01416                          
-## 3    11861108
-```
-
-```r
-#return all possible results for the translation between "PubChem CID" and "Chemical Name"
-id<-c("446220")
-from<-"PubChem CID"
-to<- c("Chemical Name")
-CTSgetR(id,from,to,progress=FALSE,limit.values=FALSE)
-```
-
-```
-##   PubChem CID
-## 1      446220
-## 2      446220
-##                                                                                         Chemical Name
-## 1                Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
-## 2 8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-
+##    fromIdentifier                  searchTerm              toIdentifier
+## 1        InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N             Chemical Name
+## 2        InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N             Chemical Name
+## 3        InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N             Chemical Name
+## 4        InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N             Chemical Name
+## 5        InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N             Chemical Name
+## 6        InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N               PubChem CID
+## 7        InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N               PubChem CID
+## 8        InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N               PubChem CID
+## 9        InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N               PubChem CID
+## 10       InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N                      KEGG
+## 11       InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N                      KEGG
+## 12       InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N                      KEGG
+## 13       InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N Human Metabolome Database
+## 14       InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N Human Metabolome Database
+## 15       InChIKey ZAGRKAFMISFKIO-QMTHXVAHSA-N Human Metabolome Database
+##                                                                                                  value
+## 1                                                                                                error
+## 2                 Methyl (1R,2R,3S,5S)-3-(benzoyloxy)-8-methyl-8-azabicyclo[3.2.1]octane-2-carboxylate
+## 3  8-Azabicyclo[3.2.1]octane-2-carboxylic acid, 3-(benzoyloxy)-8-methyl-, methyl ester, (1R,2R,3S,5S)-
+## 4                                       Ergoline-8-carboxylic acid, 9,10-didehydro-6-methyl-, (8beta)-
+## 5                                            (8beta)-6-Methyl-9,10-didehydroergoline-8-carboxylic acid
+## 6                                                                                                 6089
+## 7                                                                                               446220
+## 8                                                                                             11861108
+## 9                                                                                                 6717
+## 10                                                                                              C08302
+## 11                                                                                              C01416
+## 12                                                                                                    
+## 13                                                                                           HMDB05973
+## 14                                                                                                    
+## 15
 ```
 
 
