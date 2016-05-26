@@ -9,7 +9,7 @@
 #' @details Interface to CTS (http://cts.fiehnlab.ucdavis.edu/) for metabolite identifier translation between > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID, ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS. Entries not found in CTS are returned as "", CTS errors are returned as 'error'. Observation:  CTS errors can be random, i.e. running the same query multiple times might result in success or error :(
 #' @seealso  \code{\link{CTS.options}}
 #' @export
-#' @import jsonlite
+#' @import httr
 #' @examples
 #' \dontrun{
 #' id<-c("C15973","C00026","C05381")
@@ -20,11 +20,11 @@
 CTSgetR<-function(id,from,to,limit.values=TRUE,progress=TRUE,server="http://cts.fiehnlab.ucdavis.edu/service/convert"){ 
 
 	opts<-CTS.options()
-	if(!to%in%opts|!from%in%opts) {
+	if(any(!to%in%opts) || any(!from%in%opts)) {
 	
-	stop(paste0("The supplied to or from name is not in the list of available options.","\n",
-	"Did you mean from = '", opts[agrep(from,opts,ignore.case = TRUE)],"' and to = '",opts[agrep(to,opts,ignore.case = TRUE)],"'?", "\n",
-	"See CTS.options() for all available options.","\n"))
+	stop(
+	  paste0("The supplied to: ",to, " or from: ", from," are not in the list of available options.\nSee CTS.options() for possible arguments.","\n",collapse="")
+	)
 	}
 # 
 # 	fixlc<-function(obj){as.character(unlist(obj))} #redo w/ dplyr and httr
@@ -40,7 +40,6 @@ CTSgetR<-function(id,from,to,limit.values=TRUE,progress=TRUE,server="http://cts.
 }
 
 
-#' @import httr
 CTS.translate<-function(server,from,to,id,progress=TRUE,limit.values=TRUE){ 
 	  
   
@@ -82,13 +81,12 @@ CTS.translate<-function(server,from,to,id,progress=TRUE,limit.values=TRUE){
 
 # get possible translations from CTS
 #' @title CTS.options
+#' @param url for options
 #' @export
-#' @import jsonlite
+#' @import httr
 #' @details get translation options from CTS
-CTS.options<-function(){
-		options(warn=-1)	
-		url<-readLines("http://cts.fiehnlab.ucdavis.edu/service/conversion/toValues")
-		jsonlite::fromJSON(url)
+CTS.options<-function(url="http://cts.fiehnlab.ucdavis.edu/service/conversion/toValues"){
+		content(GET(url))
 	}
 
 #' @title multi.CTSgetR

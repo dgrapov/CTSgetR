@@ -40,6 +40,11 @@ CTSgetR(id,from,to,progress=FALSE,limit.values = FALSE)
 ```
 
 ```
+## Warning in if (!to %in% opts | !from %in% opts) {: the condition has length
+## > 1 and only the first element will be used
+```
+
+```
 ##    fromIdentifier                  searchTerm              toIdentifier
 ## 1        InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N             Chemical Name
 ## 2        InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N             Chemical Name

@@ -166,6 +166,8 @@ id&lt;-<span class="kw">c</span>(<span class="st">&quot;DMULVCHRPCFFGV-UHFFFAOYS
 from&lt;-<span class="st">&quot;InChIKey&quot;</span>
 to&lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Chemical Name&quot;</span>, <span class="st">&quot;PubChem CID&quot;</span>, <span class="st">&quot;KEGG&quot;</span>,<span class="st">&quot;Human Metabolome Database&quot;</span>)
 <span class="kw">CTSgetR</span>(id,from,to,<span class="dt">progress=</span><span class="ot">FALSE</span>,<span class="dt">limit.values =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<pre><code>## Warning in if (!to %in% opts | !from %in% opts) {: the condition has length
+## &gt; 1 and only the first element will be used</code></pre>
 <pre><code>##    fromIdentifier                  searchTerm              toIdentifier
 ## 1        InChIKey DMULVCHRPCFFGV-UHFFFAOYSA-N             Chemical Name
 ## 2        InChIKey ZPUCINDJVBIVPJ-LJISPDSOSA-N             Chemical Name

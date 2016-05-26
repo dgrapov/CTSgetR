@@ -29,6 +29,8 @@ value = structure(c(1L, 3L, 2L, 5L, 4L, 6L, 7L, 8L, 9L, 10L,
 "searchTerm", "toIdentifier", "value"), row.names = c(NA, 15L
 ), class = "data.frame")
 
+#unstable results based on CTS
 test_that("one to many translations", {
-  expect_equal(CTSgetR(id,from,to,limit.values=FALSE), res)
+    skip_on_cran()
+    expect_equal(CTSgetR(id,from,to,limit.values=FALSE), res)
 })

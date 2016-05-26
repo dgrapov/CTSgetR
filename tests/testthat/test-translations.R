@@ -1,4 +1,4 @@
-#tests
+#skip_on_cran(tests
 context("CTS translation")
 
 #in
@@ -24,6 +24,8 @@ value = structure(c(1L, 2L, 3L, 1L, 4L, 5L, 7L, 8L, 9L, 10L,
 "searchTerm", "toIdentifier", "value"), row.names = c(NA, 19L
 ), class = "data.frame")
 
+
 test_that("one to one translation", {
-  expect_equal(CTSgetR(id,from,to), res)
+    skip_on_cran()
+    expect_equal(CTSgetR(id,from,to), res)
 })
