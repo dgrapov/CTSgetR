@@ -106,6 +106,9 @@ CTSgetR(id,from,to,progress=FALSE,limit.values = FALSE)
 ## 16
 ```
 
-
 ### Check out some more [translation examples](https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-System-in-R).
+
+## TODO
+- [ ] Get POST to work
+- [ ] Make it more awesome!
 
