@@ -20,11 +20,18 @@ output:
 install_github("dgrapov/CTSgetR")
 ```
 
+### Make sure CTS API is available
+
+```r
+library(CTSgetR)
+GET('https://cts.fiehnlab.ucdavis.edu/services') %>%
+  http_status(.) %>%
+  {if( .$category != 'Success'){stop('Oops looks like https://cts.fiehnlab.ucdavis.edu/services is down!') }} 
+```
 
 ### View some of the possible translation options between > 200 databases
 
 ```r
-library(CTSgetR)
 trans<-unlist(valid_from())
 head(trans,10)
 ```
@@ -59,13 +66,13 @@ db_stats()
 
 ```
 ## [[1]]
-##                   translation n
-## 1 Chemical Name <--> InChIKey 4
-## 2   InChIKey <--> PubChem CID 4
-## 3       KEGG <--> PubChem CID 3
+##                   translation  n
+## 1 Chemical Name <--> InChIKey  4
+## 2   InChIKey <--> PubChem CID  4
+## 3       KEGG <--> PubChem CID 22
 ## 
 ## $total
-## [1] 11
+## [1] 30
 ```
 
 
@@ -87,7 +94,7 @@ CTSgetR(id,from,to,db_name)
 ## 2 lactic acid Chemical Name InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
 ```
 
-#### One to many
+#### One identifier to many
 
 ```r
 id<-c("alanine",'lactic acid')
@@ -111,7 +118,7 @@ to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
 
 
 
-#### Many to one
+#### Many identifiers to one
 
 ```r
 to<- "InChIKey"
@@ -132,40 +139,4 @@ to<- "InChIKey"
 ## 4      C01432                      KEGG InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
 ## 5 HMDB0000161 Human Metabolome Database InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
 ## 6 HMDB0144295 Human Metabolome Database InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
-```
-### About
-
-```r
-sessionInfo()
-```
-
-```
-## R version 3.6.2 (2019-12-12)
-## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 18363)
-## 
-## Matrix products: default
-## 
-## locale:
-## [1] LC_COLLATE=English_United States.1252 
-## [2] LC_CTYPE=English_United States.1252   
-## [3] LC_MONETARY=English_United States.1252
-## [4] LC_NUMERIC=C                          
-## [5] LC_TIME=English_United States.1252    
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-## [1] CTSgetR_1.3   RSQLite_2.2.0 httr_1.4.1    purrr_0.3.3   dplyr_0.8.3  
-## 
-## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.3       knitr_1.27       magrittr_1.5     tidyselect_0.2.5
-##  [5] bit_1.1-15.2     R6_2.4.1         rlang_0.4.2      blob_1.2.1      
-##  [9] stringr_1.4.0    tools_3.6.2      xfun_0.12        DBI_1.1.0       
-## [13] htmltools_0.4.0  yaml_2.2.0       bit64_0.9-7      assertthat_0.2.1
-## [17] digest_0.6.23    tibble_2.1.3     crayon_1.3.4     vctrs_0.2.1     
-## [21] curl_4.3         zeallot_0.1.0    memoise_1.1.0    glue_1.3.1      
-## [25] evaluate_0.14    rmarkdown_2.0    stringi_1.4.4    compiler_3.6.2  
-## [29] pillar_1.4.3     backports_1.1.5  jsonlite_1.6     pkgconfig_2.0.3
 ```

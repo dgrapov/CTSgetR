@@ -21,10 +21,16 @@ knitr::opts_chunk$set(message=FALSE,warning=FALSE)
 install_github("dgrapov/CTSgetR")
 ```
 
+### Make sure CTS API is available
+```{r}
+library(CTSgetR)
+GET('https://cts.fiehnlab.ucdavis.edu/services') %>%
+  http_status(.) %>%
+  {if( .$category != 'Success'){stop('Oops looks like https://cts.fiehnlab.ucdavis.edu/services is down!') }} 
+```
 
 ### View some of the possible translation options between > 200 databases
 ```{r}
-library(CTSgetR)
 trans<-unlist(valid_from())
 head(trans,10)
 ```
