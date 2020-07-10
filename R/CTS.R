@@ -190,7 +190,7 @@ CTSgetR_query <-
       need <- id[!id %in% in_db$id]
     } else {
       have <- character()
-      need <- idid
+      need <- id
     }
     
     
