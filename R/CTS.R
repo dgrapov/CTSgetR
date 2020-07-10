@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #' @title CTSgetR
 #' @param id a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and code{\link{valid_from}}
 #' @param from Database name describing \code{id} see \code{\link{valid_from}}
@@ -66,106 +65,7 @@ CTSgetR <- function(id, from, to, db_name = NULL) {
   return(out)
   
 }
-=======
-CTSgetR<-function(id,from,to,async=FALSE,limit.values=TRUE,progress=TRUE,server="http://cts.fiehnlab.ucdavis.edu/service/convert",...){ 
 
-	opts<-CTS.options()
-	if(!to%in%opts|!from%in%opts) {
-	
-	stop(paste0("The supplied to or from name is not in the list of available options.","\n",
-	"Did you mean from = '", opts[agrep(from,opts,ignore.case = TRUE)],"' and to = '",paste(opts[agrep(to,opts,ignore.case = TRUE)],collapse=","),"'?", "\n",
-	"See CTS.options() for all available options.","\n"))
-	}
-
-	
-	
-	if(progress) cat("Getting translations...","\n")
-	if(async){
-		out<-unlist(CTS.translate.async(server=server,from=from,to=to,id=id,...))
-		out<-lapply(1:length(out),function(i){out[i]})
-	} else{
-		out<-CTS.translate(server=server,from=from,to=to,id=id,progress=progress) 
-	}
-	
-	if(limit.values){ 
-		parser<-function(x){
-			tmp<-jsonlite::fromJSON(x)
-			tryCatch(tmp[,"result"]<-strsplit(fixlc(tmp[,"result"]),"/,")[[1]],error=function(e) {NULL})
-			return(tmp)
-		}
-		
-		res<-do.call("rbind",lapply(out,parser))
-		#format output
-		res$result<-sapply(1:length(res[,"result"]),function(i){
-				if(length(res[,"result"][[i]])==0) { ""
-				} else {
-					res[,"result"][[i]]
-				}
-			})
-						
-	} else {
-		res<-do.call("rbind",lapply(out,jsonlite::fromJSON))
-		#format output, could collapse on comma, not sure which is more useful?
-		res<-do.call("rbind",lapply(1:length(res[,"result"]),function(i){
-				if(length(res[,"result"][[i]])==0) { 
-					expand.grid(res[,"searchTerm"][[i]],"")
-				} else {
-					expand.grid(res[,"searchTerm"][[i]],res[,"result"][[i]])
-				}
-			}))
-		id<-res$Var1
-		res$result<-res$Var2 # getting ugly	
-			
-	}
-		
-	out<-data.frame(from=id,to=res$result)
-	colnames(out)<-c(from,to)	
-	return(out)
-	
-}
-	
-CTS.translate<-function(server,from,to,id,progress=TRUE){ #arguably parallel, seems more connection stable than asynchronous
-		#require("RCurl")
-		# results are returned as JSON encoded strings
-		id<-as.character(unlist(id))
-		url<-paste(server,curlEscape(from),curlEscape(to),curlEscape(id),sep="/") # seperate encoding because can have forward slash in args
-		if(progress) pb <- txtProgressBar(min = 0, max = length(id), style = 3)
-		content<-lapply(1:length(id), function(i)
-			{
-				if(progress) setTxtProgressBar(pb, i)
-				readLines(url[i])
-			})
-		if(progress) close(pb)
-		return(content)
-}
-
-#asynchronous, need to debug
-CTS.translate.async<-function(server,from,to,id,async.limit=100,...){ 
-		require("RCurl")
-		# results are returned as JSON encoded strings
-		# limit controls the maximum number of request per call to the server
-		id<-as.character(unlist(id))
-		url<-paste(server,curlEscape(from),curlEscape(to),curlEscape(id),sep="/") # seperate encoding because can have forward slash in args
-	
-		options(RCurlOptions = list(verbose = TRUE,
-                              followlocation = TRUE,
-                              autoreferer = TRUE,
-                              nosignal = TRUE))
-		curl = getCurlHandle()	
-		
-		if(is.null(async.limit)){
-			getURL(url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl) #not stable missing some args
-		} else {
-			if(async.limit>=length(url)){async.limit<-length(url)-1}
-			cuts<-cut(1:length(url),breaks=seq(1,length(url),length.out=ceiling(length(url)/async.limit)+1),include.lowest = TRUE)
-			url.list<-split(url,cuts)
-			lapply(1:length(url.list), function(i) {
-				tmp.url<-url.list[[i]]
-				getURL(tmp.url,  ssl.verifypeer = FALSE, useragent = "R", timeout=10, curl = curl) # unstable for unclear reasons
-			} )
-		}
-
->>>>>>> 9d36fd0bcb45c1b4e8b5a1667b8d960acb844d59
 
 # #convert name to inchikey and get top score
 #' @export

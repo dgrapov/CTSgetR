@@ -44,7 +44,7 @@ trans[grepl(want,trans,ignore.case=TRUE)]
 
 ### Initialize a local database to speed up routine queries
 ```{r}
-db_name<-'inst/cts.sqlite'
+db_name<-'cts.sqlite'
 init_CTSgetR_db(db_name)
 db_stats()
 ```
