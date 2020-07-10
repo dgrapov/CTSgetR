@@ -10,7 +10,7 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE)
 ```
 
-## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
+## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/inst/ctsgetR_logo.png?raw=true)
 
 ### R interface to the [Chemical Translation Service (CTS)](http://cts.fiehnlab.ucdavis.edu/)
 

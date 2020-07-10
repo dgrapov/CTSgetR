@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ---
 output:
   html_document:
@@ -6,15 +5,10 @@ output:
     keep_md: yes
     theme: readable
 ---
-=======
-[![paypal](https://raw.githubusercontent.com/dgrapov/CDS/gh-pages/www/images/donate.png)](http://createdatasol.com/)
-
-![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
->>>>>>> 9d36fd0bcb45c1b4e8b5a1667b8d960acb844d59
 
 
 
-## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
+## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/inst/ctsgetR_logo.png?raw=true)
 
 ### R interface to the [Chemical Translation Service (CTS)](http://cts.fiehnlab.ucdavis.edu/)
 
