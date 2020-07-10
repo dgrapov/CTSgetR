@@ -4,36 +4,36 @@
 \alias{CTSgetR}
 \title{CTSgetR}
 \usage{
-CTSgetR(id, from, to, limit.values = TRUE, progress = TRUE,
-  server = "http://cts.fiehnlab.ucdavis.edu/service/convert")
+CTSgetR(id, from, to, db_name = NULL)
 }
 \arguments{
-\item{id}{a vector of metabolite identifier(s) or name(s) to translate see \code{\link{CTS.options}}}
+\item{id}{a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and code{\link{valid_from}}}
 
-\item{from}{Database name describing \code{id} see \code{\link{CTS.options}}}
+\item{from}{Database name describing \code{id} see \code{\link{valid_from}}}
 
-\item{to}{Database name to translate \code{id} to see \code{\link{CTS.options}}
-from    Database name describing \code{id} see \code{\link{CTS.options}}}
+\item{to}{Database name to translate \code{id} see \code{\link{valid_to}}}
 
-\item{limit.values}{return a single (first non empty) value or a comma separated string of multiple values (defaults to FALSE).}
-
-\item{server}{Web address for the Chemical Translation System web services (defaults to http://cts.fiehnlab.ucdavis.edu/service/convert).}
+\item{db_name}{string path for sqlite database to store cached results in see \code{\link{valid_to}}}
 }
 \value{
 data frame of results including \code{from} (fromIdentifier), \code{id} (searchTerm), \code{to} (toIdentifier) and translated values
 }
+\description{
+CTSgetR
+}
 \details{
-Interface to CTS (http://cts.fiehnlab.ucdavis.edu/) for metabolite identifier translation between > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID, ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS. Entries not found in CTS are returned as "", CTS errors are returned as 'error'. Observation:  CTS errors can be random, i.e. running the same query multiple times might result in success or error :(
+Interface to CTS (http://cts.fiehnlab.ucdavis.edu/) for metabolite identifier translation between
+ > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID, 
+ ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS.
 }
 \examples{
 \dontrun{
 id<-c("C15973","C00026","C05381")
-from<-"KEGG" 
+from<-"KEGG"
 to<-"PubChem CID"
 CTSgetR(id,from,to)
 }
 }
 \seealso{
-\code{\link{CTS.options}}
+\code{\link{valid_to}} \code{\link{valid_from}} \code{\link{name_to_inchikey}}
 }
-

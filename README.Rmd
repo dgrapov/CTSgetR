@@ -5,53 +5,82 @@ output:
     keep_md: yes
     theme: readable
 ---
-![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
 
-R interface to the [Chemical Translation Service (CTS)] (http://cts.fiehnlab.ucdavis.edu/)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE,warning=FALSE)
+```
+
+## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/etc/ctsgetR_logo.png?raw=true)
+
+### R interface to the [Chemical Translation Service (CTS)](http://cts.fiehnlab.ucdavis.edu/)
+
+#### `CTSgetR` provides a consitent interface to translation of chemical names and over 200 database identifiers including `InChIKey`, `HMDB`, `KEGG` and `PubChem`. Translation of chemical names is hard. Use `CTSgetR` to robustly translate chemical names to other identifiers through 1) conversion to `InChIKey` 2) `biological` or `popularity` scoring and 3) translation to over 200 biological database identifiers. `CTSgetR` uses a sqlite database to cache and speed all of your routine translations.
 
 ### Installation
-```{r, message=FALSE,warning=FALSE}
-#library(devtools) # install.packages("devtools") if missing
-#install_github(repo = "CTSgetR", username = "dgrapov",ref="simple")
-library(CTSgetR)
+```{r, message=FALSE,warning=FALSE,eval=FALSE}
+install_github("dgrapov/CTSgetR")
 ```
 
-### How to use the interface
-```r
-help(CTSgetR)
-```
 
-### View possible translation options between > 200 databases.
+### View some of the possible translation options between > 200 databases
 ```{r}
-trans<-unlist(CTS.options())
+library(CTSgetR)
+trans<-unlist(valid_from())
 head(trans,10)
 ```
 
-### Find a database of interest.
+### Find a database of interest
 ```{r}
-want<-'zinc'
-fuzzy<-1 # larger more fuzzy matching
-trans[agrepl(want,trans,ignore.case=TRUE,max.distance=fuzzy)]
-
+want<-'CID'
+trans[grepl(want,trans,ignore.case=TRUE)]
 ```
 
-### Example usage
+
+### Initialize a local database to speed up routine queries
+```{r}
+db_name<-'cts.sqlite'
+init_CTSgetR_db(db_name)
+db_stats()
+```
+
+
+### Translation examples
+
+#### `Chemical Name` to `InChIKey`
 ```{r,message=FALSE}
-library(CTSgetR)
-#translate from chemical name to InchiKey
-id<-"alanine"
+
+id<-c("alanine",'lactic acid')
 from<-"Chemical Name"
 to<-"InChIKey"
-CTSgetR(id,from,to,progress=FALSE)
 
-#translate from one to many identifiers 
-id<-c("DMULVCHRPCFFGV-UHFFFAOYSA-N","ZPUCINDJVBIVPJ-LJISPDSOSA-N","ZAGRKAFMISFKIO-QMTHXVAHSA-N")
-from<-"InChIKey"
-to<- c("Chemical Name", "PubChem CID", "KEGG","Human Metabolome Database")
-CTSgetR(id,from,to,progress=FALSE,limit.values = FALSE)
+CTSgetR(id,from,to,db_name)
+```
+
+#### One identifier to many
+```{r}
+id<-c("alanine",'lactic acid')
+from<-"Chemical Name"
+to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
+
+(out<-to %>%
+  map(~CTSgetR(id,from,.,db_name)) 
+  %>% do.call('rbind',.))
+
 
 ```
 
 
-### Check out some more [translation examples](https://github.com/dgrapov/CTSgetR/wiki/Chemical-Translation-System-in-R).
 
+#### Many identifiers to one
+```{r}
+
+to<- "InChIKey"
+
+(out2<-out %>%
+  pmap_dfr(function(...) {
+    tmp <- tibble(...)
+    CTSgetR(tmp$key,tmp$to,to,db_name)
+  
+  }))
+
+```

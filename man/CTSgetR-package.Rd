@@ -11,8 +11,8 @@ Translate between > 200 of the most common metabolite database identifiers inclu
 \tabular{ll}{
 Package: \tab CTSgetR\cr
 Type: \tab Package\cr
-Version: \tab 1.2\cr
-Date: \tab 2016-05-21\cr
+Version: \tab 1.3\cr
+Date: \tab 2020-07-06\cr
 License: \tab MIT\cr
 }
 
