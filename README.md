@@ -8,10 +8,12 @@ output:
 
 
 
-## ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/inst/ctsgetR_logo.png?raw=true)
+# ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/inst/ctsgetR_logo.png?raw=true)
 
 <hr>
-### R interface to the [Chemical Translation Service (CTS)](http://cts.fiehnlab.ucdavis.edu/)
+
+## R interface to the [Chemical Translation Service (CTS)](http://cts.fiehnlab.ucdavis.edu/)
+
 <hr>
 
 #### `CTSgetR` provides a consitent interface to translation of chemical names and over 200 database identifiers including `InChIKey`, `HMDB`, `KEGG` and `PubChem`. Translation of chemical names is hard. Use `CTSgetR` to robustly translate chemical names to other identifiers through 1) conversion to `InChIKey` 2) `biological` or `popularity` scoring and 3) translation to over 200 biological database identifiers. `CTSgetR` uses a sqlite database to cache and speed all of your routine translations.
@@ -144,7 +146,9 @@ to<- "InChIKey"
 ```
 
 <hr>
+
 ## Deploy `CTSgetR` as a `docker`ized `API`
+
 <hr>
 
 ### The following [docker]() image and [docker-compose]() commands can be used to `build` and run the `CTSgetR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
