@@ -4,7 +4,7 @@ services:
     ctsgetr:
       build: 
         context: .
-        dockerfile: dockerfile
+        dockerfile: Dockerfile
         args:
           - rstudio_pass=${rstudio_pass}
       image: dgrapov/ctsgetr:latest
