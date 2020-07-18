@@ -26,8 +26,29 @@
 #' 
 
 
+#' @export
+#' #' @details test return format for functions
+api_echo<-function(...){
+    
+    return(jsonlite::toJSON(list(...)))
+}
 
-#' #check if cid is valid
+#' @export
+api_debug<-function(){
+  
+  out<-list(pwd=getwd(),
+            db=dir('/ctsgetrdb'),
+            date=Sys.time())
+  
+  
+  jsonlite::toJSON(out)
+  
+}
+
+
+
+#' @export
+
 #' @export
 #' @param cid compound identifier see https://pubchem.ncbi.nlm.nih.gov/
 #' @details Check if valid CID; used to filter bad queries to PUG endpoints

@@ -2,7 +2,9 @@
 context("CTS translation")
 
 #test agains local db or set to NULL to test API
-db_name<-'../../inst/ctsgetr.sqlite'
+db_name<-'../../inst/ctsgetr.sqlite' # local DB
+# init_db<-"test.sqlite"
+# tryCatch(unlink(init_db))
 
 print(getwd())
 #in
@@ -52,3 +54,12 @@ test_that("one to one translation", {
   expect_equivalent(CTSgetR(id, from, to,db_name), res)
   # expect_equal(getwd(), 'foo')
 })
+
+
+# test_that("testing DB init", {
+#   skip_on_cran()
+#   expect_error(CTSgetR(id = "C15973", from="KEGG", to="PubChem CID",db_name=init_db),)
+#   # expect_equal(getwd(), 'foo')
+# })
+# 
+# unlink(init_db)

@@ -17,8 +17,7 @@
 #' to<-"PubChem CID"
 #' CTSgetR(id,from,to)
 #' }
-CTSgetR <- function(id, from, to, db_name = NULL) {
-  
+CTSgetR <- function(id, from, to, db_name = NULL,...) {
   
   if (any(!to %in% valid_to()) | any(!from %in% valid_from())) {
     stop(
@@ -156,14 +155,14 @@ get_translation<-function(source_id,source,target){
   res<- url %>%
     map(~ f(.))
   
-  
+
   parse_response<-function(x){
-    
+
     tmp<-x %>%
-      flatten(.)
+      purrr::flatten(.)
     
     if(length(tmp$results)>0){
-      tmp$results <-unlist(flatten(tmp$results))[1]
+      tmp$results <-unlist(purrr::flatten(tmp$results))[1]
     }
     
     data.frame(
@@ -183,7 +182,10 @@ get_translation<-function(source_id,source,target){
 
 CTSgetR_query <-
   function(id, from, to, db_name = NULL) {
-    if (!is.null(db_name)) {
+    
+    in_db <- db_get(id, from, to, db_name)
+    
+    if (!is.null(in_db)) {
       in_db <- db_get(id, from, to, db_name)
       
       have <- id[id %in% in_db$id]
@@ -191,6 +193,7 @@ CTSgetR_query <-
     } else {
       have <- character()
       need <- id
+      in_db<-data.frame()
     }
     
     

@@ -5,6 +5,10 @@
 
 ##TODO create a database of all KEGG,CID,names and inchi
 
+db_exit<-function(con){
+  tryCatch(DBI::dbDisconnect(mydb),error=function(e){as.character(e)})
+}
+
 #format API response to db structure (names)
 db_transform<-function(obj){
   
@@ -32,12 +36,26 @@ db_key<-function(obj){
 
 #check if key exists in db
 #and add if absent else add methods for upsert
-db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',upsert=FALSE,verbose=FALSE){
+db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',init = TRUE,verbose=FALSE){
   
-  mydb <- tryCatch(dbConnect(RSQLite::SQLite(), db_name),error=function(e){})
   
-  if(is.null(mydb)){stop('No database found!')}
+  if(is.null(db_name)){
+    stop('No database defined')
+  }
   
+  #need to check if table exists
+  mydb <- dbConnect(RSQLite::SQLite(), db_name)
+  on.exit(db_exit(mydb)) #debuging db locking on ocpu
+  
+  db_init<-"CTSgetR" %in% dbListTables(mydb)
+ 
+ 
+  if(!db_init & init){
+    
+    #initialize db format
+    init_CTSgetR_db(db_name)
+    
+  } 
   
   #format input
   input <- data.frame(id, from, to,key) %>% 
@@ -46,14 +64,14 @@ db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',upsert=FALSE,ve
   
   #check if values exist
   #if so do not replace
-  if(!upsert){
-    query<-"SELECT EXISTS(SELECT 1 FROM CTSgetR WHERE key_index=:key_index);"
-    params<-list(key_index=input$key_index %>% as.character()) # all exist
-    old<-dbGetQuery(mydb, query,params) %>% unlist() %>% as.logical()
+
+  query<-"SELECT EXISTS(SELECT 1 FROM CTSgetR WHERE key_index=:key_index);"
+  params<-list(key_index=input$key_index %>% as.character()) # all exist
+  old<-dbGetQuery(mydb, query,params) %>% unlist() %>% as.logical()
+  
+  input<-input[!old,]
     
-    input<-input[!old,]
-    
-  }
+
   
   #add
   if(nrow(input) > 0){
@@ -66,13 +84,13 @@ db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',upsert=FALSE,ve
     
   }
   
-  DBI::dbDisconnect(mydb)
   
 }
 
 db_get <-function(id, from, to, db_name='inst/ctsgetr.sqlite'){
   
   mydb <- tryCatch(dbConnect(RSQLite::SQLite(), db_name),error=function(e){})
+  on.exit(db_exit(mydb))
   
   if(is.null(mydb)){print('No database found!');return()}
   
@@ -110,7 +128,10 @@ db_get <-function(id, from, to, db_name='inst/ctsgetr.sqlite'){
   params <-input[pnames] %>% as.list()
   
   
-  res<-dbGetQuery(mydb, query,params) 
+  res<-tryCatch(dbGetQuery(mydb, query,params),error=function(e){})
+  
+  #bad query or no db, could check CTSgetR table above
+  if(is.null(res)) return()
   
   #format as API results
   if(invert){
@@ -125,8 +146,7 @@ db_get <-function(id, from, to, db_name='inst/ctsgetr.sqlite'){
     rename(., !!vars) %>%
     select(-key_index) %>%
     .[c('id','from','to','key')]
-  
-  DBI::dbDisconnect(mydb)
+
   
   return(out)
 }
@@ -139,9 +159,18 @@ db_get <-function(id, from, to, db_name='inst/ctsgetr.sqlite'){
 db_stats<-function(data=FALSE,db_name='inst/ctsgetr.sqlite'){
   
   mydb <- dbConnect(RSQLite::SQLite(), db_name)
+  on.exit(db_exit(mydb))
+  
+  db_init<-"CTSgetR" %in% dbListTables(mydb)
+  
+  if(!db_init){
+    stop('The database is not configured use "init_CTSgetR_db" first.')
+  }
+  
+  
   query<-"SELECT * FROM CTSgetR"
   res<-dbGetQuery(mydb, query)
-  DBI::dbDisconnect(mydb)
+  on.exit(DBI::dbDisconnect(mydb))
   
   x<-paste(as.character(res$source),as.character(res$target),sep=' <--> ')
   if(data){
@@ -155,7 +184,9 @@ db_stats<-function(data=FALSE,db_name='inst/ctsgetr.sqlite'){
 #' @export
 #' @param db_name string sqlite database name
 #' @import RSQLite
-init_CTSgetR_db<-function(db_name='inst/ctsgetr.sqlite'){
+init_CTSgetR_db<-function(db_name='inst/ctsgetr.sqlite',verbose=T){
+  
+  if(verbose) print('Creating a new database')
   
   x<-structure(list(source = structure(c(1L, 1L, 1L), .Label = "InChIKey", class = "factor"), 
                     target = structure(c(1L, 1L, 1L), .Label = "PubChem CID", class = "factor"), 
@@ -167,6 +198,7 @@ init_CTSgetR_db<-function(db_name='inst/ctsgetr.sqlite'){
                                                                                                                                       "InChIKey_PubChem CID_AEMRFAOFKBGASW-UHFFFAOYSA-N_3698251"
                                                                                 )), class = "data.frame", row.names = c(NA, -3L))
   mydb <- dbConnect(RSQLite::SQLite(), db_name)
+  on.exit(db_exit(mydb))
   dbWriteTable(mydb, "CTSgetR", x, overwrite=TRUE)
 }
 

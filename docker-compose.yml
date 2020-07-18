@@ -1,0 +1,22 @@
+version: '2.0'
+
+services:
+    ctsgetr:
+      build: 
+        context: .
+        dockerfile: dockerfile
+        args:
+          - rstudio_pass=${rstudio_pass}
+      image: dgrapov/ctsgetr:latest
+      container_name: ctsgetr
+      
+      volumes:
+        - ${ctsgetr_db_mount}:/ctsgetrdb/
+        
+      environment:
+        - ctsgetr_db=/ctsgetr/inst/ctsgetr.sqlite
+      
+      ports:
+        - "80:80"
+
+     
