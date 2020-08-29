@@ -6,7 +6,7 @@ services:
         context: .
         dockerfile: dockerfile_custom
         args:
-          - rstudio_pass=${rstudio_pass} 
+          - rstudio_pass=${rstudio_pass}
       image: dgrapov/ctsgetr:latest
       container_name: ctsgetr
       

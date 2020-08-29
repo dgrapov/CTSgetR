@@ -117,17 +117,16 @@ CTSgetR(args2,db_name=db_name)
 
 <hr>
 
-### The following [docker]() image and [docker-compose]() commands can be used to `build` and run the `CTSg
-etR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
+### The following [docker](https://hub.docker.com/r/dgrapov/ctsgetr/dockerfile) image and [docker-compose](https://github.com/dgrapov/CTSgetR/blob/master/docker-compose.yml) commands can be used to `build` and run the `CTSgetR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
 
-* ### [CTSgetR image]()
-* ### [ocpuclient](): client library for accessign `CTSgetR` `API`
+* #### [CTSgetR image](https://hub.docker.com/r/dgrapov/ctsgetr)
+* #### [ocpuclient](https://github.com/dgrapov/ocpuclient): client library for accessign `CTSgetR` `API`
 
 ### The `CTSgetR` image contains an opencpu and Rstudio server
-* ### `localhost/ocpu/`: [opencpu-server](https://www.opencpu.org/)
-* ### `localhost/rstudio/` : [rstudio server](https://hub.docker.com/r/opencpu/rstudio) (use user: opencpu and password:<mypassword> )
+* #### `localhost/ocpu/`: [opencpu-server](https://www.opencpu.org/)
+* #### `localhost/rstudio/` : [rstudio server](https://hub.docker.com/r/opencpu/rstudio) (use user: opencpu and password:<mypassword> )
 
-###  Build docker `image`
+##  Build docker `image`
 #### `build`
 ```
 export rstudio_pass=mypassword # rstudio server password for user opencpu
@@ -135,7 +134,7 @@ docker-compose -f docker-compose.yml build --force-rm
 
 ```
 
-#### Launch API
+### Launch API
 ```
 #mount to persist internal sqlite DB between updates 
 export ctsgetr_db_mount=<local path to save database e.g. /mypath>
@@ -143,9 +142,9 @@ docker-compose -f docker-compose.yml up -d
 
 ```
 
-#### Test API endpoints
+### Test API endpoints
 
-##### `bash`
+#### `bash`
 ```bash
 curl http://localhost/ocpu/library/CTSgetR/R/heartbeat
 ```
