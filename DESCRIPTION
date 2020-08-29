@@ -9,6 +9,7 @@ Description: Translate between chemical names and > 200 of the most common biolo
     identifiers.
 Depends:
     dplyr,
+    tidyr,
     purrr,
     httr,
     RSQLite
@@ -20,4 +21,5 @@ Imports:
     dplyr,
     purrr,
     httr,
-    RSQLite
+    RSQLite,
+    tidyr

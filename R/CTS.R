@@ -1,15 +1,16 @@
+
 #' @title CTSgetR
 #' @param id a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and code{\link{valid_from}}
-#' @param from Database name describing \code{id} see \code{\link{valid_from}}
-#' @param to Database name to translate \code{id} see \code{\link{valid_to}}
-#' @param db_name string path for sqlite database to store cached results in see \code{\link{valid_to}}
+#' @param from Database name describing \code{id} see \code{\link[CTSgetR]{valid_from}}
+#' @param to Database name to translate \code{id} see \code{\link[CTSgetR]{valid_to}}
+#' @param db_name string path for sqlite database to store cached results in see \code{\link[CTSgetR]{valid_to}}
 #' @return data frame of results including \code{from} (fromIdentifier), \code{id} (searchTerm), \code{to} (toIdentifier) and translated values
 #' @details Interface to CTS (http://cts.fiehnlab.ucdavis.edu/) for metabolite identifier translation between
-#'  > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID, 
+#'  > 200 of the most common biological databases including: Chemical Name, InChIKey, PubChem CID,
 #'  ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS.
-#' @seealso  \code{\link{valid_to}} \code{\link{valid_from}} \code{\link{name_to_inchikey}}
+#' @seealso  \code{\link[CTSgetR]{single_CTSgetR}}
 #' @export
-#' @import httr dplyr
+#' @import httr dplyr purrr
 #' @examples
 #' \dontrun{
 #' id<-c("C15973","C00026","C05381")
@@ -17,8 +18,26 @@
 #' to<-"PubChem CID"
 #' CTSgetR(id,from,to)
 #' }
-CTSgetR <- function(id, from, to, db_name = NULL,...) {
+CTSgetR<-function(id, from, to, db_name = NULL, ...){
   
+
+  #treat all as data frame input
+  #map by row for consistency
+  args<- CTSgetR_format(id, from, to, format=TRUE, key_split=TRUE)
+  
+ 
+  out<-args %>%
+    map( ~ do.call('single_CTSgetR', c(.,list(db_name=db_name),list(...)))) %>%
+      do.call('rbind', .)
+  
+  rownames(out)<-NULL
+  
+  return(out)
+  
+}
+
+
+single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
   if (any(!to %in% valid_to()) | any(!from %in% valid_from())) {
     stop(
       paste0(
@@ -66,15 +85,47 @@ CTSgetR <- function(id, from, to, db_name = NULL,...) {
 }
 
 
+#' @export
+CTSgetR_format<-function(id,from,to,key_split=FALSE,format=FALSE,...){
+  
+
+  if(!'data.frame' %in% class(id)){
+    
+    out<-expand.grid(id=id,from=from,to=to) 
+    
+  } else {
+    
+    out<-id
+  }
+  
+  if(key_split){
+    out<-out %>%
+      tidyr::unite('split_key',c(from,to),remove=FALSE) %>%
+      mutate('index'=rownames(.)) %>%
+      split(.,.$'split_key')
+  } 
+  
+  #format for call
+  if(format){
+    out<-lapply(out, function(x){
+      
+      list(id=x$id,from=x$from[1],to=x$to[1])
+      
+    })
+  } 
+  
+  return(out)
+  
+}
+
+
 # #convert name to inchikey and get top score
 #' @export
 #' @param chemical names as strings or a vector
 #' @param algorithm string one of  'biological' or 'popularity' defaults to 'biological' see https://cts.fiehnlab.ucdavis.edu/services
 #' @return inchikeys and scores or NA if absent for each chemical name
-name_to_inchikey<-function(name,algorithm='biological'){
-  
-  f<-function(x){
-    
+name_to_inchikey <- function(name, algorithm = 'biological') {
+  f <- function(x) {
     x %>%
       tolower() %>%
       URLencode(.) %>%
@@ -88,81 +139,82 @@ name_to_inchikey<-function(name,algorithm='biological'){
   }
   
   url <- name %>%
-    map( ~ f(.)) %>%
+    map(~ f(.)) %>%
     unlist()
   
   
-  f<-function(url){
+  f <- function(url) {
     pb$tick()$print()
     GET(url) %>% content()
   }
   
   pb <- progress_estimated(length(url))
   
-  res<- url %>%
-    map(~ f(.))
+  res <- url %>%
+    map( ~ f(.))
   
   #extract scores
-  score_inchikey<-function(req){
-    
-    f<-function(x){
-      data.frame(name=null_replace(x$searchTerm),
-                 inchikey=null_replace(x$result[[1]]$InChIKey),
-                 score=null_replace(x$result[[1]]$score))
+  score_inchikey <- function(req) {
+    f <- function(x) {
+      data.frame(
+        name = null_replace(x$searchTerm),
+        inchikey = null_replace(x$result[[1]]$InChIKey),
+        score = null_replace(x$result[[1]]$score)
+      )
     }
     
     req %>%
-      map(~ f(.)) %>%
-      do.call('rbind',.)
+      map( ~ f(.)) %>%
+      do.call('rbind', .)
     
   }
   
-  score<-score_inchikey(res)
+  score <- score_inchikey(res)
   
   #convert to expected format
-  data.frame(from='Chemical Name', to='InChIKey', id=score$name, key=score$inchikey) 
+  data.frame(
+    from = 'Chemical Name',
+    to = 'InChIKey',
+    id = score$name,
+    key = score$inchikey
+  )
   
 }
 
 #convert inchi to id
-get_translation<-function(source_id,source,target){
-  
-  
-  f<-function(x,source,target){
-    
+get_translation <- function(source_id, source, target) {
+  f <- function(x, source, target) {
     x %>%
-      paste(
-        'https://cts.fiehnlab.ucdavis.edu/rest/convert',
-        source,
-        target,
-        .,
-        sep='/') %>%
-      map(~URLencode(.)) %>%
+      paste('https://cts.fiehnlab.ucdavis.edu/rest/convert',
+            source,
+            target,
+            .,
+            sep = '/') %>%
+      map( ~ URLencode(.)) %>%
       unlist()
     
   }
   
   url <- source_id %>%
-    map( ~ f(.,source,target))
+    map(~ f(., source, target))
   
   
-  f<-function(url){
+  f <- function(url) {
     pb$tick()$print()
     GET(url) %>% content()
   }
   
   pb <- progress_estimated(length(source_id))
-  res<- url %>%
-    map(~ f(.))
+  res <- url %>%
+    map( ~ f(.))
   
-
-  parse_response<-function(x){
-
-    tmp<-x %>%
+  
+  parse_response <- function(x) {
+    tmp <- x %>%
       purrr::flatten(.)
     
-    if(length(tmp$results)>0){
-      tmp$results <-unlist(purrr::flatten(tmp$results))[1]
+    if (length(tmp$results) > 0) {
+      tmp$results <- unlist(purrr::flatten(tmp$results))[1]
     }
     
     data.frame(
@@ -175,14 +227,13 @@ get_translation<-function(source_id,source,target){
   }
   
   res %>%
-    map(~parse_response(.)) %>%
-    do.call('rbind',.) %>%
+    map( ~ parse_response(.)) %>%
+    do.call('rbind', .) %>%
     mutate(id = id) # to returned normalized results in upon error
 }
 
 CTSgetR_query <-
   function(id, from, to, db_name = NULL) {
-    
     in_db <- db_get(id, from, to, db_name)
     
     if (!is.null(in_db)) {
@@ -193,7 +244,7 @@ CTSgetR_query <-
     } else {
       have <- character()
       need <- id
-      in_db<-data.frame()
+      in_db <- data.frame()
     }
     
     
@@ -230,7 +281,7 @@ CTSgetR_query <-
         in_db <- api_res
       }
       
-      in_db <- in_db[as.character(in_db$id) %in% id,]
+      in_db <- in_db[as.character(in_db$id) %in% id, ]
       
     }
     
@@ -476,7 +527,7 @@ valid_from <- function(update = FALSE) {
   }
 }
 
-#to values
+
 #' @export
 #' @param update logical (default FALSE) if live or cached results should be returned
 valid_to <- function(update = FALSE) {
@@ -715,4 +766,85 @@ valid_to <- function(update = FALSE) {
     )
     
   }
+}
+
+#' @export
+#' @param cid compound identifier see https://pubchem.ncbi.nlm.nih.gov/
+#' @details Check if valid CID; used to filter bad queries to PUG endpoints
+check_cid<-function(cid){
+  
+  f<-function(cid){
+    
+    pb$tick()$print()
+    
+    url<-paste0('https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/',
+                cid,
+                '/property/MolecularFormula/JSON')
+    
+    res<-GET(url)
+    status<-http_status(res)
+    msg<-paste0(status$message,": ",cid)
+    
+    out<-list(status=status$category,message=msg)
+    
+    
+    if(status$category != 'Success'){
+      out$valid<-FALSE
+    } else {
+      out$valid<-TRUE
+    }
+    
+    data.frame(out)
+  }
+  
+  pb <- progress_estimated(length(cid))
+  
+  as.list(cid) %>%
+    map( ~ f(.)) %>%
+    do.call('rbind',.)
+  
+}
+
+
+test<-function(){
+  
+  library(CTSgetR)
+  
+  #map: 
+  id<-c("alanine",'lactic acid')
+  from<-"Chemical Name"
+  to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
+  
+  CTSgetR(id,from,to)
+  
+  tmp1<-list(id=id,from=from,to=to)
+  
+  #many to
+  #treat all as data frame input
+  #map by row for consistency
+  
+  
+  
+  library(tidyr)
+  
+  
+  (tmp1<- CTSgetR_format(id,from,to))
+  
+  tmp2 <-
+    list(
+      id = c('HMDB0000161'),
+      from = 'Human Metabolome Database',
+      to = c('KEGG', 'PubChem CID')
+    ) %>% do.call('CTSgetR_format', .)
+  
+  
+  
+  CTSgetR(tmp2)
+  
+  tmp3<-rbind(tmp1, tmp2) 
+    
+  CTSgetR(tmp3)  
+  
+ 
+  
 }

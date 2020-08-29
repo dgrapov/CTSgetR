@@ -442,21 +442,23 @@ summary {
 <div id="ctsgetr-provides-a-consitent-interface-to-translation-of-chemical-names-and-over-200-database-identifiers-including-inchikey-hmdb-kegg-and-pubchem.-translation-of-chemical-names-is-hard.-use-ctsgetr-to-robustly-translate-chemical-names-to-other-identifiers-through-1-conversion-to-inchikey-2-biological-or-popularity-scoring-and-3-translation-to-over-200-biological-database-identifiers.-ctsgetr-uses-a-sqlite-database-to-cache-and-speed-all-of-your-routine-translations." class="section level4">
 <h4><code>CTSgetR</code> provides a consitent interface to translation of chemical names and over 200 database identifiers including <code>InChIKey</code>, <code>HMDB</code>, <code>KEGG</code> and <code>PubChem</code>. Translation of chemical names is hard. Use <code>CTSgetR</code> to robustly translate chemical names to other identifiers through 1) conversion to <code>InChIKey</code> 2) <code>biological</code> or <code>popularity</code> scoring and 3) translation to over 200 biological database identifiers. <code>CTSgetR</code> uses a sqlite database to cache and speed all of your routine translations.</h4>
 </div>
-<div id="installation-see-below-for-a-docker-example" class="section level3">
-<h3>Installation (see below for a <code>docker</code> example)</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">install_github</span>(<span class="st">&quot;dgrapov/CTSgetR&quot;</span>)</a></code></pre></div>
+<div id="this-package-supports-metabolite-identifier-translation" class="section level4">
+<h4>This package supports metabolite identifier translation:</h4>
+<ul>
+<li><h4 id="in-r"><a href="#in-R">in R</a></h4></li>
+<li><h4 id="deployed-as-an-opencpu-api">deployed as an <a href="https://www.opencpu.org/">opencpu</a> <a href="#API">API</a></h4></li>
+<li><h4 id="from-a-shiny-ui-using-asynchronous-local-or-api-calls">from a <a href="#shiny">shiny UI</a> using asynchronous local or API calls</h4></li>
+</ul>
+<p><a name="in-R"></a></p>
+</div>
+<div id="installation" class="section level3">
+<h3>Installation</h3>
 </div>
 <div id="make-sure-cts-api-is-available" class="section level3">
 <h3>Make sure CTS API is available</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">library</span>(CTSgetR)</a>
-<a class="sourceLine" id="cb2-2" title="2"><span class="kw">GET</span>(<span class="st">&#39;https://cts.fiehnlab.ucdavis.edu/services&#39;</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="st">  </span><span class="kw">http_status</span>(.) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-4" title="4"><span class="st">  </span>{<span class="cf">if</span>( .<span class="op">$</span>category <span class="op">!=</span><span class="st"> &#39;Success&#39;</span>){<span class="kw">stop</span>(<span class="st">&#39;Oops looks like https://cts.fiehnlab.ucdavis.edu/services is down!&#39;</span>) }} </a></code></pre></div>
 </div>
 <div id="view-some-of-the-possible-translation-options-between-200-databases" class="section level3">
 <h3>View some of the possible translation options between &gt; 200 databases</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">trans&lt;-<span class="kw">unlist</span>(<span class="kw">valid_from</span>())</a>
-<a class="sourceLine" id="cb3-2" title="2"><span class="kw">head</span>(trans,<span class="dv">10</span>)</a></code></pre></div>
 <pre><code>##  [1] &quot;BioCyc&quot;                    &quot;CAS&quot;                      
 ##  [3] &quot;ChEBI&quot;                     &quot;Chemical Name&quot;            
 ##  [5] &quot;Human Metabolome Database&quot; &quot;InChIKey&quot;                 
@@ -465,72 +467,75 @@ summary {
 </div>
 <div id="find-a-database-of-interest" class="section level3">
 <h3>Find a database of interest</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">want&lt;-<span class="st">&#39;CID&#39;</span></a>
-<a class="sourceLine" id="cb5-2" title="2">trans[<span class="kw">grepl</span>(want,trans,<span class="dt">ignore.case=</span><span class="ot">TRUE</span>)]</a></code></pre></div>
 <pre><code>## [1] &quot;PubChem CID&quot;</code></pre>
 </div>
 <div id="initialize-a-local-database-to-speed-up-routine-queries" class="section level3">
 <h3>Initialize a local database to speed up routine queries</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">db_name&lt;-<span class="st">&#39;cts.sqlite&#39;</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="kw">init_CTSgetR_db</span>(db_name)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">db_stats</span>()</a></code></pre></div>
+<pre><code>## [1] &quot;Creating a new database&quot;</code></pre>
 <pre><code>## [[1]]
-##                   translation  n
-## 1 Chemical Name &lt;--&gt; InChIKey  4
-## 2   InChIKey &lt;--&gt; PubChem CID  4
-## 3       KEGG &lt;--&gt; PubChem CID 22
+##                               translation  n
+## 1             Chemical Name &lt;--&gt; InChIKey 10
+## 2 Human Metabolome Database &lt;--&gt; InChIKey  1
+## 3                      InChIKey &lt;--&gt; KEGG  6
+## 4               InChIKey &lt;--&gt; PubChem CID  4
+## 5                   KEGG &lt;--&gt; PubChem CID 22
 ## 
 ## $total
-## [1] 30</code></pre>
+## [1] 43</code></pre>
 </div>
 <div id="translation-examples" class="section level3">
 <h3>Translation examples</h3>
 <div id="chemical-name-to-inchikey" class="section level4">
 <h4><code>Chemical Name</code> to <code>InChIKey</code></h4>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">id&lt;-<span class="kw">c</span>(<span class="st">&quot;alanine&quot;</span>,<span class="st">&#39;lactic acid&#39;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2">from&lt;-<span class="st">&quot;Chemical Name&quot;</span></a>
-<a class="sourceLine" id="cb9-3" title="3">to&lt;-<span class="st">&quot;InChIKey&quot;</span></a>
-<a class="sourceLine" id="cb9-4" title="4"></a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="kw">CTSgetR</span>(id,from,to,db_name)</a></code></pre></div>
 <pre><code>##            id          from       to                         key
 ## 1     alanine Chemical Name InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
 ## 2 lactic acid Chemical Name InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N</code></pre>
 </div>
 <div id="one-identifier-to-many" class="section level4">
 <h4>One identifier to many</h4>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">id&lt;-<span class="kw">c</span>(<span class="st">&quot;alanine&quot;</span>,<span class="st">&#39;lactic acid&#39;</span>)</a>
-<a class="sourceLine" id="cb11-2" title="2">from&lt;-<span class="st">&quot;Chemical Name&quot;</span></a>
-<a class="sourceLine" id="cb11-3" title="3">to&lt;-<span class="st"> </span><span class="kw">c</span>( <span class="st">&quot;PubChem CID&quot;</span>, <span class="st">&quot;KEGG&quot;</span>,<span class="st">&quot;Human Metabolome Database&quot;</span>)</a>
-<a class="sourceLine" id="cb11-4" title="4"></a>
-<a class="sourceLine" id="cb11-5" title="5">(out&lt;-to <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="st">  </span><span class="kw">map</span>(<span class="op">~</span><span class="kw">CTSgetR</span>(id,from,.,db_name)) </a>
-<a class="sourceLine" id="cb11-7" title="7">  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">do.call</span>(<span class="st">&#39;rbind&#39;</span>,.))</a></code></pre></div>
+<div id="the-example-below-shows-the-alternative-data.frame-input-format-for-more-complex-queries." class="section level5">
+<h5>The example below shows the alternative <code>data.frame</code> input format for more complex queries.</h5>
+<pre><code>##            id          from                        to
+## 1     alanine Chemical Name               PubChem CID
+## 2 lactic acid Chemical Name               PubChem CID
+## 3     alanine Chemical Name                      KEGG
+## 4 lactic acid Chemical Name                      KEGG
+## 5     alanine Chemical Name Human Metabolome Database
+## 6 lactic acid Chemical Name Human Metabolome Database</code></pre>
 <pre><code>##            id          from                        to         key
-## 1     alanine Chemical Name               PubChem CID        5950
-## 2 lactic acid Chemical Name               PubChem CID    19789253
+## 1     alanine Chemical Name Human Metabolome Database HMDB0000161
+## 2 lactic acid Chemical Name Human Metabolome Database HMDB0144295
 ## 3     alanine Chemical Name                      KEGG      C00041
 ## 4 lactic acid Chemical Name                      KEGG      C01432
-## 5     alanine Chemical Name Human Metabolome Database HMDB0000161
-## 6 lactic acid Chemical Name Human Metabolome Database HMDB0144295</code></pre>
+## 5     alanine Chemical Name               PubChem CID        5950
+## 6 lactic acid Chemical Name               PubChem CID    19789253</code></pre>
+</div>
 </div>
 <div id="many-identifiers-to-one" class="section level4">
 <h4>Many identifiers to one</h4>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">to&lt;-<span class="st"> &quot;InChIKey&quot;</span></a>
-<a class="sourceLine" id="cb13-2" title="2"></a>
-<a class="sourceLine" id="cb13-3" title="3">(out2&lt;-out <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb13-4" title="4"><span class="st">  </span><span class="kw">pmap_dfr</span>(<span class="cf">function</span>(...) {</a>
-<a class="sourceLine" id="cb13-5" title="5">    tmp &lt;-<span class="st"> </span><span class="kw">tibble</span>(...)</a>
-<a class="sourceLine" id="cb13-6" title="6">    <span class="kw">CTSgetR</span>(tmp<span class="op">$</span>key,tmp<span class="op">$</span>to,to,db_name)</a>
-<a class="sourceLine" id="cb13-7" title="7">  </a>
-<a class="sourceLine" id="cb13-8" title="8">  }))</a></code></pre></div>
-<pre><code>##            id                      from       to                         key
-## 1        5950               PubChem CID InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 2    19789253               PubChem CID InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
-## 3      C00041                      KEGG InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 4      C01432                      KEGG InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
-## 5 HMDB0000161 Human Metabolome Database InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 6 HMDB0144295 Human Metabolome Database InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N</code></pre>
+<div id="build-up-complex-queries-by-combingn-data-frames-of-id-from-to-to-values." class="section level5">
+<h5>Build up complex queries by combingn data frames of <code>id</code>, <code>from</code> to <code>to</code> values.</h5>
+<pre><code>##            id                      from                        to
+## 1     alanine             Chemical Name               PubChem CID
+## 2 lactic acid             Chemical Name               PubChem CID
+## 3     alanine             Chemical Name                      KEGG
+## 4 lactic acid             Chemical Name                      KEGG
+## 5     alanine             Chemical Name Human Metabolome Database
+## 6 lactic acid             Chemical Name Human Metabolome Database
+## 7 HMDB0000161 Human Metabolome Database                      KEGG
+## 8 HMDB0000161 Human Metabolome Database               PubChem CID</code></pre>
+<pre><code>##            id                      from                        to         key
+## 1     alanine             Chemical Name Human Metabolome Database HMDB0000161
+## 2 lactic acid             Chemical Name Human Metabolome Database HMDB0144295
+## 3     alanine             Chemical Name                      KEGG      C00041
+## 4 lactic acid             Chemical Name                      KEGG      C01432
+## 5     alanine             Chemical Name               PubChem CID        5950
+## 6 lactic acid             Chemical Name               PubChem CID    19789253
+## 7 HMDB0000161 Human Metabolome Database                      KEGG      C00041
+## 8 HMDB0000161 Human Metabolome Database               PubChem CID        5950</code></pre>
 <hr>
+<p><a name="API"></a></p>
+</div>
 </div>
 </div>
 </div>
@@ -541,31 +546,146 @@ summary {
 <h3>The following <a href>docker</a> image and <a href>docker-compose</a> commands can be used to <code>build</code> and run the <code>CTSgetR</code> package as an <a href="https://hub.docker.com/r/opencpu/ubuntu-18.04">opencpu</a> based <code>API</code>.</h3>
 <ul>
 <li><h3 id="ctsgetr-image"><a href>CTSgetR image</a></h3></li>
-<li><h3 id="ctsgetr-client-openapi-compliant-client-for-the-ctsgetr-api"><a href>CTSgetR-client</a>: openAPI compliant client for the <code>CTSgetR</code> <code>API</code></h3></li>
+<li><h3 id="ocpuclient-client-library-for-accessign-ctsgetr-api"><a href>ocpuclient</a>: client library for accessign <code>CTSgetR</code> <code>API</code></h3></li>
 </ul>
 </div>
-<div id="the-ctsgetr-image-provides-the-following-endpoints" class="section level3">
-<h3>The <code>CTSgetR</code> image provides the following endpoints:</h3>
+<div id="the-ctsgetr-image-contains-an-opencpu-and-rstudio-server" class="section level3">
+<h3>The <code>CTSgetR</code> image contains an opencpu and Rstudio server</h3>
 <ul>
 <li><h3 id="localhostocpu-opencpu-server"><code>localhost/ocpu/</code>: <a href="https://www.opencpu.org/">opencpu-server</a></h3></li>
-<li><h3 id="localhostrstudio-rstudio-server-use-user-opencpu-and-passwordmypassword"><code>localhost/rstudio/</code> : <a href="https://hub.docker.com/r/opencpu/rstudio">rstudio server</a> (use user: opencpu and password:mypassword )</h3></li>
+<li><h3 id="localhostrstudio-rstudio-server-use-user-opencpu-and-password"><code>localhost/rstudio/</code> : <a href="https://hub.docker.com/r/opencpu/rstudio">rstudio server</a> (use user: opencpu and password:<mypassword> )</h3></li>
 </ul>
 </div>
-<div id="image" class="section level3">
-<h3><code>Image:</code></h3>
+<div id="build-docker-image" class="section level3">
+<h3>Build docker <code>image</code></h3>
 <div id="build" class="section level4">
 <h4><code>build</code></h4>
 <pre><code>export rstudio_pass=mypassword # rstudio server password for user opencpu
 docker-compose -f docker-compose.yml build --force-rm
 </code></pre>
 </div>
-<div id="run" class="section level4">
-<h4><code>run</code></h4>
+<div id="launch-api" class="section level4">
+<h4>Launch API</h4>
 <pre><code>#mount to persist internal sqlite DB between updates 
-export ctsgetr_db_mount=/mypath
+export ctsgetr_db_mount=&lt;local path to save database e.g. /mypath&gt;
 docker-compose -f docker-compose.yml up -d
 </code></pre>
 </div>
+<div id="test-api-endpoints" class="section level4">
+<h4>Test API endpoints</h4>
+<div id="bash" class="section level5">
+<h5><code>bash</code></h5>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb12-1" title="1"><span class="ex">curl</span> http://localhost/ocpu/library/CTSgetR/R/heartbeat</a></code></pre></div>
+</div>
+</div>
+<div id="r" class="section level4">
+<h4><code>R</code></h4>
+<div id="heartbeat" class="section level5">
+<h5>heartbeat</h5>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">library</span>(ocpuclient)</a>
+<a class="sourceLine" id="cb13-2" title="2"></a>
+<a class="sourceLine" id="cb13-3" title="3">base_url&lt;-<span class="st">&#39;http://localhost/ocpu/&#39;</span></a>
+<a class="sourceLine" id="cb13-4" title="4"></a>
+<a class="sourceLine" id="cb13-5" title="5">endpoint&lt;-<span class="st">&#39;library/CTSgetR/R/heartbeat&#39;</span></a>
+<a class="sourceLine" id="cb13-6" title="6">url&lt;-<span class="kw">paste0</span>(base_url,endpoint)</a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="kw">post_ocpu</span>(<span class="dt">url=</span>url)</a></code></pre></div>
+</div>
+<div id="translation" class="section level5">
+<h5>translation</h5>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="co">#translate</span></a>
+<a class="sourceLine" id="cb14-2" title="2">endpoint&lt;-<span class="st">&#39;library/CTSgetR/R/CTSgetR&#39;</span></a>
+<a class="sourceLine" id="cb14-3" title="3">url&lt;-<span class="kw">paste0</span>(base_url,endpoint)</a>
+<a class="sourceLine" id="cb14-4" title="4"></a>
+<a class="sourceLine" id="cb14-5" title="5">id &lt;-</a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="st">  </span><span class="kw">c</span>(<span class="st">&quot;C15973&quot;</span>,</a>
+<a class="sourceLine" id="cb14-7" title="7">    <span class="st">&quot;C00026&quot;</span>)</a>
+<a class="sourceLine" id="cb14-8" title="8">from &lt;-<span class="st"> &quot;KEGG&quot;</span></a>
+<a class="sourceLine" id="cb14-9" title="9">to &lt;-<span class="st"> &quot;PubChem CID&quot;</span></a>
+<a class="sourceLine" id="cb14-10" title="10"></a>
+<a class="sourceLine" id="cb14-11" title="11">body&lt;-<span class="kw">list</span>(<span class="dt">id=</span>id,<span class="dt">from=</span>from,<span class="dt">to=</span>to,<span class="dt">db_name=</span>db_name)</a>
+<a class="sourceLine" id="cb14-12" title="12"></a>
+<a class="sourceLine" id="cb14-13" title="13"></a>
+<a class="sourceLine" id="cb14-14" title="14"><span class="kw">post_ocpu</span>(<span class="dt">url=</span>url,<span class="dt">body=</span>body)</a></code></pre></div>
+<p><a name="shiny"></a></p>
+</div>
+</div>
+</div>
+</div>
+<div id="launch-shiny-ui-using-asynchronous-opencpu-api" class="section level2">
+<h2>Launch <code>shiny</code> UI using asynchronous <code>opencpu</code> API</h2>
+<div id="the-following-example-shows-a-how-to-use-a-shiny-module-combined-with-futures-and-promises-r-packages-to-connect-to-an-opencpu-api." class="section level4">
+<h4>The following example shows a how to use a <code>shiny</code> module combined with <code>futures</code> and <code>promises</code> <code>R</code> packages to connect to an <code>opencpu</code> API.</h4>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">library</span>(shiny)</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="kw">library</span>(tippy)</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="kw">library</span>(CTSgetR) <span class="co"># local calls</span></a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="kw">library</span>(ocpuclient) <span class="co"># CTSgetR opencpu API calls</span></a></code></pre></div>
+</div>
+<div id="specify-local-database-or-api-options" class="section level4">
+<h4>Specify local database or API options</h4>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="co">#one of local</span></a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="kw">Sys.setenv</span>(<span class="st">&#39;ctsgetr_DB&#39;</span>=<span class="st">&#39;inst/ctsgetr.sqlite&#39;</span>) <span class="co">#see section `in R` showing how to initialize a local databse</span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="co">#or API</span></a>
+<a class="sourceLine" id="cb16-4" title="4"><span class="kw">Sys.setenv</span>(<span class="st">&#39;ctsgetr_DB&#39;</span>=<span class="st">&#39;/ctsgetr/inst/ctsgetr.sqlite&#39;</span>) <span class="co"># in API docker for mount</span></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="kw">Sys.setenv</span>(<span class="st">&#39;CTSgetR_API&#39;</span>=<span class="st">&#39;http://localhost/ocpu/library/CTSgetR/R/CTSgetR&#39;</span>) <span class="co"># url of API endpoint</span></a></code></pre></div>
+</div>
+<div id="user-input-translations" class="section level4">
+<h4>User input translations</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">    <span class="kw">library</span>(promises)</a>
+<a class="sourceLine" id="cb17-2" title="2">    <span class="kw">library</span>(future)</a>
+<a class="sourceLine" id="cb17-3" title="3">    <span class="kw">plan</span>(multisession)</a>
+<a class="sourceLine" id="cb17-4" title="4">    </a>
+<a class="sourceLine" id="cb17-5" title="5">    </a>
+<a class="sourceLine" id="cb17-6" title="6">    <span class="co">#module</span></a>
+<a class="sourceLine" id="cb17-7" title="7">    ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb17-8" title="8">      </a>
+<a class="sourceLine" id="cb17-9" title="9">      <span class="kw">sidebarLayout</span>(<span class="dt">position =</span> <span class="st">&quot;left&quot;</span>,</a>
+<a class="sourceLine" id="cb17-10" title="10">                    <span class="kw">sidebarPanel</span>(<span class="kw">tagList</span>(<span class="kw">mod_CTSgetR_ui</span>(<span class="st">&quot;translate&quot;</span>))),</a>
+<a class="sourceLine" id="cb17-11" title="11">                    <span class="kw">mainPanel</span>(<span class="kw">verbatimTextOutput</span>(<span class="st">&quot;main_out&quot;</span>)))</a>
+<a class="sourceLine" id="cb17-12" title="12">      </a>
+<a class="sourceLine" id="cb17-13" title="13">    )</a>
+<a class="sourceLine" id="cb17-14" title="14">    </a>
+<a class="sourceLine" id="cb17-15" title="15">    server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output, session) {</a>
+<a class="sourceLine" id="cb17-16" title="16">      </a>
+<a class="sourceLine" id="cb17-17" title="17">      translation &lt;-<span class="st"> </span><span class="kw">mod_CTSgetR_server</span>(<span class="st">&#39;translate&#39;</span>)</a>
+<a class="sourceLine" id="cb17-18" title="18">      </a>
+<a class="sourceLine" id="cb17-19" title="19">      output<span class="op">$</span>main_out &lt;-<span class="st"> </span><span class="kw">renderPrint</span>({</a>
+<a class="sourceLine" id="cb17-20" title="20">        <span class="kw">translation</span>() <span class="op">%...&gt;%</span><span class="st"> </span><span class="kw">print</span>(.)</a>
+<a class="sourceLine" id="cb17-21" title="21">        </a>
+<a class="sourceLine" id="cb17-22" title="22">      })</a>
+<a class="sourceLine" id="cb17-23" title="23">    }</a>
+<a class="sourceLine" id="cb17-24" title="24">    </a>
+<a class="sourceLine" id="cb17-25" title="25">    <span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+</div>
+<div id="connect-to-other-shiny-components" class="section level4">
+<h4>Connect to other shiny components</h4>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">library</span>(promises)</a>
+<a class="sourceLine" id="cb18-2" title="2">    <span class="kw">library</span>(future)</a>
+<a class="sourceLine" id="cb18-3" title="3">    <span class="kw">plan</span>(multisession)</a>
+<a class="sourceLine" id="cb18-4" title="4">    </a>
+<a class="sourceLine" id="cb18-5" title="5">    </a>
+<a class="sourceLine" id="cb18-6" title="6">    example&lt;-<span class="kw">data.frame</span>(<span class="st">&#39;chemical_name&#39;</span> =<span class="st"> </span><span class="kw">c</span>(<span class="st">&#39;alanine&#39;</span>,<span class="st">&#39;DMT&#39;</span>))</a>
+<a class="sourceLine" id="cb18-7" title="7">    </a>
+<a class="sourceLine" id="cb18-8" title="8">    <span class="co">#module</span></a>
+<a class="sourceLine" id="cb18-9" title="9">    ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb18-10" title="10">      </a>
+<a class="sourceLine" id="cb18-11" title="11">      <span class="kw">sidebarLayout</span>(<span class="dt">position =</span> <span class="st">&quot;left&quot;</span>,</a>
+<a class="sourceLine" id="cb18-12" title="12">                    <span class="kw">sidebarPanel</span>(<span class="kw">tagList</span>(<span class="kw">mod_CTSgetR_ui</span>(<span class="st">&quot;translate&quot;</span>))),</a>
+<a class="sourceLine" id="cb18-13" title="13">                    <span class="kw">mainPanel</span>(<span class="kw">verbatimTextOutput</span>(<span class="st">&quot;main_out&quot;</span>)))</a>
+<a class="sourceLine" id="cb18-14" title="14">      </a>
+<a class="sourceLine" id="cb18-15" title="15">    )</a>
+<a class="sourceLine" id="cb18-16" title="16">    </a>
+<a class="sourceLine" id="cb18-17" title="17">    server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output, session) {</a>
+<a class="sourceLine" id="cb18-18" title="18">      </a>
+<a class="sourceLine" id="cb18-19" title="19">      <span class="co">#make `example` a reactive returning a data frame to update dynamically</span></a>
+<a class="sourceLine" id="cb18-20" title="20">      translation &lt;-<span class="st"> </span><span class="kw">mod_CTSgetR_server</span>(<span class="st">&#39;translate&#39;</span>,<span class="dt">data=</span>example)</a>
+<a class="sourceLine" id="cb18-21" title="21">      </a>
+<a class="sourceLine" id="cb18-22" title="22">      output<span class="op">$</span>main_out &lt;-<span class="st"> </span><span class="kw">renderPrint</span>({</a>
+<a class="sourceLine" id="cb18-23" title="23">        <span class="kw">translation</span>() <span class="op">%...&gt;%</span><span class="st"> </span><span class="kw">print</span>(.)</a>
+<a class="sourceLine" id="cb18-24" title="24">        </a>
+<a class="sourceLine" id="cb18-25" title="25">      })</a>
+<a class="sourceLine" id="cb18-26" title="26">    }</a>
+<a class="sourceLine" id="cb18-27" title="27">    </a>
+<a class="sourceLine" id="cb18-28" title="28">    <span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
 </div>
 </div>
 </div>

@@ -22,6 +22,8 @@ docker-compose -f docker-compose.yml up -d
 #interactive debug
 docker exec -ti ctsgetr bash
 
+#might need to own mounted sqlit
+sudo chown www-data /ctsgetr/inst/.
 
 #configure app armor
 #http://bbroeksema.github.io/2014/11/20/using-sqlite-with-opencpu.html
@@ -30,72 +32,18 @@ docker exec -ti ctsgetr bash
 #how to update the db?
 #could use s3 to copy?
 
+https://cts.fiehnlab.ucdavis.edu/rest/convert/KEGG/InchiKey/C15973,C00026
 
 
-
-# R tests -----------------------------------------------------------------
-#generic function to calculate and
-#get results from opencpu
-library(curl)
-post_ocpu<-function(...){
-  
-  out<-list(results=NULL,error=NULL)
-  
-  res<-POST(...,encode='json',verbose())
-  
-  #error at API layer
-  if(status_code(res) >=400){
-    
-    out['error']<-rawToChar(res$content)
-    return(out)
-  }
-  
-  # res_headers<-httr:::parse_http_headers(res$headers)[[1]]$headers # 
-  res_headers<-headers(res)
-  res_url<-res_headers$location
-  
-  #all endpoints
-  locs<-readLines(curl(res_url))
-  
-  value<-'R/.val' # results
-  error<-'console' # error message
-  
-  
-  if(value %in% locs){
-    
-    tmp<-paste0(value,'/json') 
-    tmp<-paste0(res_url,tmp)
-    .name<-'results'
-    
-  } else {
-    #R error
-    tmp<-error
-    tmp<-paste0(res_url,tmp)
-    .name<-'error'
-    
-  }
-  
-  
-  res<-fromJSON(readLines(curl(tmp)))
-  
-  if(!'list' %in% class(res)){
-    out[[.name]]<-list(res)
-  } else {
-    out[[.name]]<-res
-  }
-  
-  return(out)
-  
-  
-}
-
-#test API
-library(CTSgetR)
-library(httr)
-library(jsonlite)
-
+# Calling the API from R -----------------------------------------------------------------
+library(ocpuclient)
 
 base_url<-'http://localhost/ocpu/'
+
+endpoint<-'library/CTSgetR/R/heartbeat'
+url<-paste0(base_url,endpoint)
+curl http://localhost/ocpu/library/CTSgetR/R/heartbeat
+post_ocpu(url=url)
 
 #debug
 endpoint<-'library/CTSgetR/R/api_debug'
@@ -105,9 +53,13 @@ post_ocpu(url=url)
 
 #db 
 db_name<-'/ctsgetr/inst/ctsgetr.sqlite'
+# db_name<-'/ctsgetr/ctsgetr.sqlite'
+# db_name<-'/ctsgetrdb/ctsgetr.sqlite'
 endpoint<-'library/CTSgetR/R/db_stats'
 url<-paste0(base_url,endpoint)
 body<-list(data=FALSE, db_name=db_name)
+
+post_ocpu(url=url,body=body)
 
 #translate
 endpoint<-'library/CTSgetR/R/CTSgetR'
@@ -125,6 +77,7 @@ body<-list(id=id,from=from,to=to,db_name=db_name)
 
 post_ocpu(url=url,body=body)
 
+do.call('CTSgetR',list(id=id,from=from,to=to))
 
 #locking with a mounted db?
 db_name<-'/ctsgetr/inst/ctsgetr.sqlite'

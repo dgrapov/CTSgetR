@@ -18,27 +18,22 @@ output:
 
 #### `CTSgetR` provides a consitent interface to translation of chemical names and over 200 database identifiers including `InChIKey`, `HMDB`, `KEGG` and `PubChem`. Translation of chemical names is hard. Use `CTSgetR` to robustly translate chemical names to other identifiers through 1) conversion to `InChIKey` 2) `biological` or `popularity` scoring and 3) translation to over 200 biological database identifiers. `CTSgetR` uses a sqlite database to cache and speed all of your routine translations.
 
-### Installation (see below for a `docker` example)
 
-```r
-install_github("dgrapov/CTSgetR")
-```
+#### This package supports metabolite identifier translation:
+
+* #### [in R](#in-R)
+* #### deployed as an [opencpu](https://www.opencpu.org/) [API](#API)
+* #### from a [shiny UI](#shiny) using asynchronous local or API calls
+
+<a name="in-R"></a>
+
+### Installation 
+
 
 ### Make sure CTS API is available
 
-```r
-library(CTSgetR)
-GET('https://cts.fiehnlab.ucdavis.edu/services') %>%
-  http_status(.) %>%
-  {if( .$category != 'Success'){stop('Oops looks like https://cts.fiehnlab.ucdavis.edu/services is down!') }} 
-```
 
 ### View some of the possible translation options between > 200 databases
-
-```r
-trans<-unlist(valid_from())
-head(trans,10)
-```
 
 ```
 ##  [1] "BioCyc"                    "CAS"                      
@@ -50,11 +45,6 @@ head(trans,10)
 
 ### Find a database of interest
 
-```r
-want<-'CID'
-trans[grepl(want,trans,ignore.case=TRUE)]
-```
-
 ```
 ## [1] "PubChem CID"
 ```
@@ -62,35 +52,27 @@ trans[grepl(want,trans,ignore.case=TRUE)]
 
 ### Initialize a local database to speed up routine queries
 
-```r
-db_name<-'cts.sqlite'
-init_CTSgetR_db(db_name)
-db_stats()
+```
+## [1] "Creating a new database"
 ```
 
 ```
 ## [[1]]
-##                   translation  n
-## 1 Chemical Name <--> InChIKey  4
-## 2   InChIKey <--> PubChem CID  4
-## 3       KEGG <--> PubChem CID 22
+##                               translation  n
+## 1             Chemical Name <--> InChIKey 10
+## 2 Human Metabolome Database <--> InChIKey  1
+## 3                      InChIKey <--> KEGG  6
+## 4               InChIKey <--> PubChem CID  4
+## 5                   KEGG <--> PubChem CID 22
 ## 
 ## $total
-## [1] 30
+## [1] 43
 ```
 
 
 ### Translation examples
 
 #### `Chemical Name` to `InChIKey`
-
-```r
-id<-c("alanine",'lactic acid')
-from<-"Chemical Name"
-to<-"InChIKey"
-
-CTSgetR(id,from,to,db_name)
-```
 
 ```
 ##            id          from       to                         key
@@ -99,53 +81,60 @@ CTSgetR(id,from,to,db_name)
 ```
 
 #### One identifier to many
+##### The example below shows the alternative `data.frame` input format for more complex queries.
 
-```r
-id<-c("alanine",'lactic acid')
-from<-"Chemical Name"
-to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
-
-(out<-to %>%
-  map(~CTSgetR(id,from,.,db_name)) 
-  %>% do.call('rbind',.))
+```
+##            id          from                        to
+## 1     alanine Chemical Name               PubChem CID
+## 2 lactic acid Chemical Name               PubChem CID
+## 3     alanine Chemical Name                      KEGG
+## 4 lactic acid Chemical Name                      KEGG
+## 5     alanine Chemical Name Human Metabolome Database
+## 6 lactic acid Chemical Name Human Metabolome Database
 ```
 
 ```
 ##            id          from                        to         key
-## 1     alanine Chemical Name               PubChem CID        5950
-## 2 lactic acid Chemical Name               PubChem CID    19789253
+## 1     alanine Chemical Name Human Metabolome Database HMDB0000161
+## 2 lactic acid Chemical Name Human Metabolome Database HMDB0144295
 ## 3     alanine Chemical Name                      KEGG      C00041
 ## 4 lactic acid Chemical Name                      KEGG      C01432
-## 5     alanine Chemical Name Human Metabolome Database HMDB0000161
-## 6 lactic acid Chemical Name Human Metabolome Database HMDB0144295
+## 5     alanine Chemical Name               PubChem CID        5950
+## 6 lactic acid Chemical Name               PubChem CID    19789253
 ```
 
 
 
 #### Many identifiers to one
+##### Build up complex queries by combingn  data frames of `id`, `from` to `to` values.
 
-```r
-to<- "InChIKey"
-
-(out2<-out %>%
-  pmap_dfr(function(...) {
-    tmp <- tibble(...)
-    CTSgetR(tmp$key,tmp$to,to,db_name)
-  
-  }))
+```
+##            id                      from                        to
+## 1     alanine             Chemical Name               PubChem CID
+## 2 lactic acid             Chemical Name               PubChem CID
+## 3     alanine             Chemical Name                      KEGG
+## 4 lactic acid             Chemical Name                      KEGG
+## 5     alanine             Chemical Name Human Metabolome Database
+## 6 lactic acid             Chemical Name Human Metabolome Database
+## 7 HMDB0000161 Human Metabolome Database                      KEGG
+## 8 HMDB0000161 Human Metabolome Database               PubChem CID
 ```
 
 ```
-##            id                      from       to                         key
-## 1        5950               PubChem CID InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 2    19789253               PubChem CID InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
-## 3      C00041                      KEGG InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 4      C01432                      KEGG InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
-## 5 HMDB0000161 Human Metabolome Database InChIKey QNAYBMKLOCPYGJ-REOHCLBHSA-N
-## 6 HMDB0144295 Human Metabolome Database InChIKey JVTAAEKCZFNVCJ-UHFFFAOYSA-N
+##            id                      from                        to         key
+## 1     alanine             Chemical Name Human Metabolome Database HMDB0000161
+## 2 lactic acid             Chemical Name Human Metabolome Database HMDB0144295
+## 3     alanine             Chemical Name                      KEGG      C00041
+## 4 lactic acid             Chemical Name                      KEGG      C01432
+## 5     alanine             Chemical Name               PubChem CID        5950
+## 6 lactic acid             Chemical Name               PubChem CID    19789253
+## 7 HMDB0000161 Human Metabolome Database                      KEGG      C00041
+## 8 HMDB0000161 Human Metabolome Database               PubChem CID        5950
 ```
 
 <hr>
+
+<a name="API"></a>
 
 ## Deploy `CTSgetR` as a `docker`ized `API`
 
@@ -154,13 +143,13 @@ to<- "InChIKey"
 ### The following [docker]() image and [docker-compose]() commands can be used to `build` and run the `CTSgetR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
 
 * ### [CTSgetR image]()
-* ### [CTSgetR-client](): openAPI compliant client for the `CTSgetR` `API`
+* ### [ocpuclient](): client library for accessign `CTSgetR` `API`
 
-### The `CTSgetR` image provides the following endpoints:
+### The `CTSgetR` image contains an opencpu and Rstudio server
 * ### `localhost/ocpu/`: [opencpu-server](https://www.opencpu.org/)
-* ### `localhost/rstudio/` : [rstudio server](https://hub.docker.com/r/opencpu/rstudio) (use user: opencpu and password:mypassword )
+* ### `localhost/rstudio/` : [rstudio server](https://hub.docker.com/r/opencpu/rstudio) (use user: opencpu and password:<mypassword> )
 
-### `Image:`
+###  Build docker `image`
 #### `build`
 ```
 export rstudio_pass=mypassword # rstudio server password for user opencpu
@@ -168,10 +157,132 @@ docker-compose -f docker-compose.yml build --force-rm
 
 ```
 
-#### `run`
+#### Launch API
 ```
 #mount to persist internal sqlite DB between updates 
-export ctsgetr_db_mount=/mypath
+export ctsgetr_db_mount=<local path to save database e.g. /mypath>
 docker-compose -f docker-compose.yml up -d
 
+```
+
+#### Test API endpoints
+
+##### `bash`
+```bash
+curl http://localhost/ocpu/library/CTSgetR/R/heartbeat
+```
+#### `R`
+##### heartbeat
+```r
+library(ocpuclient)
+
+base_url<-'http://localhost/ocpu/'
+
+endpoint<-'library/CTSgetR/R/heartbeat'
+url<-paste0(base_url,endpoint)
+post_ocpu(url=url)
+```
+
+##### translation
+```r
+#translate
+endpoint<-'library/CTSgetR/R/CTSgetR'
+url<-paste0(base_url,endpoint)
+
+id <-
+  c("C15973",
+    "C00026")
+from <- "KEGG"
+to <- "PubChem CID"
+
+body<-list(id=id,from=from,to=to,db_name=db_name)
+
+
+post_ocpu(url=url,body=body)
+
+```
+
+<a name="shiny"></a>
+
+## Launch `shiny` UI using asynchronous `opencpu` API 
+
+#### The following example shows a how to use a `shiny` module combined with `futures` and `promises`  `R` packages to connect to an `opencpu` API. 
+
+```r
+library(shiny)
+library(tippy)
+library(CTSgetR) # local calls
+library(ocpuclient) # CTSgetR opencpu API calls
+```
+
+#### Specify local database or API options
+```r
+#one of local
+Sys.setenv('ctsgetr_DB'='inst/ctsgetr.sqlite') #see section `in R` showing how to initialize a local databse
+#or API
+Sys.setenv('ctsgetr_DB'='/ctsgetr/inst/ctsgetr.sqlite') # in API docker for mount
+Sys.setenv('CTSgetR_API'='http://localhost/ocpu/library/CTSgetR/R/CTSgetR') # url of API endpoint
+````
+
+#### User input translations
+
+```r
+    library(promises)
+    library(future)
+    plan(multisession)
+    
+    
+    #module
+    ui <- fluidPage(
+      
+      sidebarLayout(position = "left",
+                    sidebarPanel(tagList(mod_CTSgetR_ui("translate"))),
+                    mainPanel(verbatimTextOutput("main_out")))
+      
+    )
+    
+    server <- function(input, output, session) {
+      
+      translation <- mod_CTSgetR_server('translate')
+      
+      output$main_out <- renderPrint({
+        translation() %...>% print(.)
+        
+      })
+    }
+    
+    shinyApp(ui, server)
+
+```
+
+#### Connect to other shiny components
+```r 
+library(promises)
+    library(future)
+    plan(multisession)
+    
+    
+    example<-data.frame('chemical_name' = c('alanine','DMT'))
+    
+    #module
+    ui <- fluidPage(
+      
+      sidebarLayout(position = "left",
+                    sidebarPanel(tagList(mod_CTSgetR_ui("translate"))),
+                    mainPanel(verbatimTextOutput("main_out")))
+      
+    )
+    
+    server <- function(input, output, session) {
+      
+      #make `example` a reactive returning a data frame to update dynamically
+      translation <- mod_CTSgetR_server('translate',data=example)
+      
+      output$main_out <- renderPrint({
+        translation() %...>% print(.)
+        
+      })
+    }
+    
+    shinyApp(ui, server)
 ```

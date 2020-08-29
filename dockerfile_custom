@@ -1,7 +1,7 @@
 FROM opencpu/ubuntu-18.04 
 
 
-RUN Rscript -e "install.packages(c('devtools','dplyr','purrr','httr','RSQLite'))"
+RUN Rscript -e "install.packages(c('devtools','tidyr','dplyr','purrr','httr','RSQLite'))"
 
 ARG rstudio_pass
 

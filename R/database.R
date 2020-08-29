@@ -79,7 +79,7 @@ db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',init = TRUE,ver
   } else {
     
     if(verbose){ 
-      print('All values are already in the database, use upsert=TRUE to replace.')
+      print('All values are already in the database')
     }
     
   }
