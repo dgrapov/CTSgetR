@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE,warning=FALSE)
 
 <a name="in-R"></a>
 
-### `using R`
+> ### `using R`
 #### Installation 
 ```{r, message=FALSE,warning=FALSE,eval=FALSE}
 install_github("dgrapov/CTSgetR")
@@ -83,7 +83,7 @@ id<-c("alanine",'lactic acid')
 from<-"Chemical Name"
 to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
 
-(args<-CTSgetR_format(id,from,to))
+args<-CTSgetR_format(id,from,to)
 
 (out<-CTSgetR(args,db_name=db_name))
 
@@ -103,7 +103,7 @@ tmp2 <-
     to = c('KEGG', 'PubChem CID')
   ) %>% do.call('CTSgetR_format', .)
 
-(args2 <- rbind(args, tmp2))
+args2 <- rbind(args, tmp2)
 
 CTSgetR(args2,db_name=db_name)
 
@@ -113,7 +113,7 @@ CTSgetR(args2,db_name=db_name)
 
 <a name="API"></a>
 
-## Deploy `CTSgetR` as a `docker`ized `API`
+> ## Deploy `CTSgetR` as a `docker`ized `API`
 
 <hr>
 
@@ -182,9 +182,9 @@ post_ocpu(url=url,body=body)
 
 <a name="shiny"></a>
 
-## Launch `shiny` UI using asynchronous `opencpu` API 
+> ## Launch `shiny` UI using asynchronous `opencpu` API 
 
-#### The following example shows a how to use a `shiny` module combined with `futures` and `promises`  `R` packages to connect to an `opencpu` API. 
+#### The following example shows a how to use a `shiny` module combined with `futures` and `promises`  `R` packages to connect to an `opencpu` API uisng async calls. 
 
 ```r
 library(shiny)
@@ -239,8 +239,8 @@ library(promises)
     library(future)
     plan(multisession)
     
-    
-    example<-data.frame('chemical_name' = c('alanine','DMT'))
+    #make `example` a reactive returning a data frame to update dynamically
+    example<-data.frame('chemical_name' = c('alanine','Pyruvic acid'))
     
     #module
     ui <- fluidPage(
@@ -253,7 +253,6 @@ library(promises)
     
     server <- function(input, output, session) {
       
-      #make `example` a reactive returning a data frame to update dynamically
       translation <- mod_CTSgetR_server('translate',data=example)
       
       output$main_out <- renderPrint({

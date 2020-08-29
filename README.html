@@ -442,35 +442,35 @@ summary {
 <div id="ctsgetr-provides-a-consitent-interface-to-translation-of-chemical-names-and-over-200-database-identifiers-including-inchikey-hmdb-kegg-and-pubchem.-translation-of-chemical-names-is-hard.-use-ctsgetr-to-robustly-translate-chemical-names-to-other-identifiers-through-1-conversion-to-inchikey-2-biological-or-popularity-scoring-and-3-translation-to-over-200-biological-database-identifiers.-ctsgetr-uses-a-sqlite-database-to-cache-and-speed-all-of-your-routine-translations." class="section level4">
 <h4><code>CTSgetR</code> provides a consitent interface to translation of chemical names and over 200 database identifiers including <code>InChIKey</code>, <code>HMDB</code>, <code>KEGG</code> and <code>PubChem</code>. Translation of chemical names is hard. Use <code>CTSgetR</code> to robustly translate chemical names to other identifiers through 1) conversion to <code>InChIKey</code> 2) <code>biological</code> or <code>popularity</code> scoring and 3) translation to over 200 biological database identifiers. <code>CTSgetR</code> uses a sqlite database to cache and speed all of your routine translations.</h4>
 </div>
-<div id="this-package-supports-metabolite-identifier-translation" class="section level4">
-<h4>This package supports metabolite identifier translation:</h4>
+<div id="this-package-supports-metabolite-identifier-translation" class="section level3">
+<h3>This package supports metabolite identifier translation:</h3>
 <ul>
-<li><h4 id="in-r"><a href="#in-R">in R</a></h4></li>
-<li><h4 id="deployed-as-an-opencpu-api">deployed as an <a href="https://www.opencpu.org/">opencpu</a> <a href="#API">API</a></h4></li>
-<li><h4 id="from-a-shiny-ui-using-asynchronous-local-or-api-calls">from a <a href="#shiny">shiny UI</a> using asynchronous local or API calls</h4></li>
+<li><h3 id="in-r"><a href="#in-R">in R</a></h3></li>
+<li><h3 id="deployed-as-an-opencpu-api">deployed as an <a href="https://www.opencpu.org/">opencpu</a> <a href="#API">API</a></h3></li>
+<li><h3 id="from-a-shiny-ui-using-asynchronous-local-or-api-calls">from a <a href="#shiny">shiny UI</a> using asynchronous local or API calls</h3></li>
 </ul>
 <p><a name="in-R"></a></p>
+<blockquote>
+<h3 id="using-r"><code>using R</code></h3>
+<h4 id="installation">Installation</h4>
+</blockquote>
+<div id="make-sure-cts-api-is-available" class="section level4">
+<h4>Make sure CTS API is available</h4>
 </div>
-<div id="installation" class="section level3">
-<h3>Installation</h3>
-</div>
-<div id="make-sure-cts-api-is-available" class="section level3">
-<h3>Make sure CTS API is available</h3>
-</div>
-<div id="view-some-of-the-possible-translation-options-between-200-databases" class="section level3">
-<h3>View some of the possible translation options between &gt; 200 databases</h3>
+<div id="view-some-of-the-possible-translation-options-between-200-databases" class="section level4">
+<h4>View some of the possible translation options between &gt; 200 databases</h4>
 <pre><code>##  [1] &quot;BioCyc&quot;                    &quot;CAS&quot;                      
 ##  [3] &quot;ChEBI&quot;                     &quot;Chemical Name&quot;            
 ##  [5] &quot;Human Metabolome Database&quot; &quot;InChIKey&quot;                 
 ##  [7] &quot;KEGG&quot;                      &quot;LMSD&quot;                     
 ##  [9] &quot;LipidMAPS&quot;                 &quot;PubChem CID&quot;</code></pre>
 </div>
-<div id="find-a-database-of-interest" class="section level3">
-<h3>Find a database of interest</h3>
+<div id="find-a-database-of-interest" class="section level4">
+<h4>Find a database of interest</h4>
 <pre><code>## [1] &quot;PubChem CID&quot;</code></pre>
 </div>
-<div id="initialize-a-local-database-to-speed-up-routine-queries" class="section level3">
-<h3>Initialize a local database to speed up routine queries</h3>
+<div id="initialize-a-local-database-to-speed-up-routine-queries" class="section level4">
+<h4>Initialize a local database to speed up routine queries</h4>
 <pre><code>## [1] &quot;Creating a new database&quot;</code></pre>
 <pre><code>## [[1]]
 ##                               translation  n
@@ -483,8 +483,9 @@ summary {
 ## $total
 ## [1] 43</code></pre>
 </div>
-<div id="translation-examples" class="section level3">
-<h3>Translation examples</h3>
+<div id="translation-examples" class="section level4">
+<h4>Translation examples</h4>
+</div>
 <div id="chemical-name-to-inchikey" class="section level4">
 <h4><code>Chemical Name</code> to <code>InChIKey</code></h4>
 <pre><code>##            id          from       to                         key
@@ -535,15 +536,15 @@ summary {
 ## 8 HMDB0000161 Human Metabolome Database               PubChem CID        5950</code></pre>
 <hr>
 <p><a name="API"></a></p>
-</div>
-</div>
-</div>
-</div>
-<div id="deploy-ctsgetr-as-a-dockerized-api" class="section level2">
-<h2>Deploy <code>CTSgetR</code> as a <code>docker</code>ized <code>API</code></h2>
+<blockquote>
+<h2 id="deploy-ctsgetr-as-a-dockerized-api">Deploy <code>CTSgetR</code> as a <code>docker</code>ized <code>API</code></h2>
+</blockquote>
 <hr>
-<div id="the-following-docker-image-and-docker-compose-commands-can-be-used-to-build-and-run-the-ctsgetr-package-as-an-opencpu-based-api." class="section level3">
-<h3>The following <a href>docker</a> image and <a href>docker-compose</a> commands can be used to <code>build</code> and run the <code>CTSgetR</code> package as an <a href="https://hub.docker.com/r/opencpu/ubuntu-18.04">opencpu</a> based <code>API</code>.</h3>
+</div>
+</div>
+</div>
+<div id="the-following-docker-image-and-docker-compose-commands-can-be-used-to-build-and-run-the-ctsg-etr-package-as-an-opencpu-based-api." class="section level3">
+<h3>The following <a href>docker</a> image and <a href>docker-compose</a> commands can be used to <code>build</code> and run the <code>CTSg etR</code> package as an <a href="https://hub.docker.com/r/opencpu/ubuntu-18.04">opencpu</a> based <code>API</code>.</h3>
 <ul>
 <li><h3 id="ctsgetr-image"><a href>CTSgetR image</a></h3></li>
 <li><h3 id="ocpuclient-client-library-for-accessign-ctsgetr-api"><a href>ocpuclient</a>: client library for accessign <code>CTSgetR</code> <code>API</code></h3></li>
@@ -607,12 +608,11 @@ docker-compose -f docker-compose.yml up -d
 <a class="sourceLine" id="cb14-13" title="13"></a>
 <a class="sourceLine" id="cb14-14" title="14"><span class="kw">post_ocpu</span>(<span class="dt">url=</span>url,<span class="dt">body=</span>body)</a></code></pre></div>
 <p><a name="shiny"></a></p>
+<blockquote>
+<h2 id="launch-shiny-ui-using-asynchronous-opencpu-api">Launch <code>shiny</code> UI using asynchronous <code>opencpu</code> API</h2>
+</blockquote>
 </div>
 </div>
-</div>
-</div>
-<div id="launch-shiny-ui-using-asynchronous-opencpu-api" class="section level2">
-<h2>Launch <code>shiny</code> UI using asynchronous <code>opencpu</code> API</h2>
 <div id="the-following-example-shows-a-how-to-use-a-shiny-module-combined-with-futures-and-promises-r-packages-to-connect-to-an-opencpu-api." class="section level4">
 <h4>The following example shows a how to use a <code>shiny</code> module combined with <code>futures</code> and <code>promises</code> <code>R</code> packages to connect to an <code>opencpu</code> API.</h4>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">library</span>(shiny)</a>
@@ -686,6 +686,7 @@ docker-compose -f docker-compose.yml up -d
 <a class="sourceLine" id="cb18-26" title="26">    }</a>
 <a class="sourceLine" id="cb18-27" title="27">    </a>
 <a class="sourceLine" id="cb18-28" title="28">    <span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+</div>
 </div>
 </div>
 </div>

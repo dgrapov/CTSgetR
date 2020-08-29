@@ -19,21 +19,22 @@ output:
 #### `CTSgetR` provides a consitent interface to translation of chemical names and over 200 database identifiers including `InChIKey`, `HMDB`, `KEGG` and `PubChem`. Translation of chemical names is hard. Use `CTSgetR` to robustly translate chemical names to other identifiers through 1) conversion to `InChIKey` 2) `biological` or `popularity` scoring and 3) translation to over 200 biological database identifiers. `CTSgetR` uses a sqlite database to cache and speed all of your routine translations.
 
 
-#### This package supports metabolite identifier translation:
+### This package supports metabolite identifier translation:
 
-* #### [in R](#in-R)
-* #### deployed as an [opencpu](https://www.opencpu.org/) [API](#API)
-* #### from a [shiny UI](#shiny) using asynchronous local or API calls
+* ### [in R](#in-R)
+* ### deployed as an [opencpu](https://www.opencpu.org/) [API](#API)
+* ### from a [shiny UI](#shiny) using asynchronous local or API calls
 
 <a name="in-R"></a>
 
-### Installation 
+> ### `using R`
+#### Installation 
 
 
-### Make sure CTS API is available
+#### Make sure CTS API is available
 
 
-### View some of the possible translation options between > 200 databases
+#### View some of the possible translation options between > 200 databases
 
 ```
 ##  [1] "BioCyc"                    "CAS"                      
@@ -43,14 +44,14 @@ output:
 ##  [9] "LipidMAPS"                 "PubChem CID"
 ```
 
-### Find a database of interest
+#### Find a database of interest
 
 ```
 ## [1] "PubChem CID"
 ```
 
 
-### Initialize a local database to speed up routine queries
+#### Initialize a local database to speed up routine queries
 
 ```
 ## [1] "Creating a new database"
@@ -69,8 +70,7 @@ output:
 ## [1] 43
 ```
 
-
-### Translation examples
+#### Translation examples
 
 #### `Chemical Name` to `InChIKey`
 
@@ -136,11 +136,12 @@ output:
 
 <a name="API"></a>
 
-## Deploy `CTSgetR` as a `docker`ized `API`
+> ## Deploy `CTSgetR` as a `docker`ized `API`
 
 <hr>
 
-### The following [docker]() image and [docker-compose]() commands can be used to `build` and run the `CTSgetR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
+### The following [docker]() image and [docker-compose]() commands can be used to `build` and run the `CTSg
+etR` package as an [opencpu](https://hub.docker.com/r/opencpu/ubuntu-18.04) based `API`.
 
 * ### [CTSgetR image]()
 * ### [ocpuclient](): client library for accessign `CTSgetR` `API`
@@ -204,7 +205,7 @@ post_ocpu(url=url,body=body)
 
 <a name="shiny"></a>
 
-## Launch `shiny` UI using asynchronous `opencpu` API 
+> ## Launch `shiny` UI using asynchronous `opencpu` API 
 
 #### The following example shows a how to use a `shiny` module combined with `futures` and `promises`  `R` packages to connect to an `opencpu` API. 
 
