@@ -9,7 +9,8 @@ ARG rstudio_pass
 RUN \
   echo "opencpu:$rstudio_pass" | chpasswd
 
-#allow DB access from package 
+#allow DB access from package (may not be required?)
+#might also need to sudo chown www-data /ctsgetr/inst/.
 RUN mkdir ctsgetr
 RUN echo -e "/ctsgetr/ rw,\n/ctsgetr/** rwkmix,\n" >> /etc/apparmor.d/opencpu.d/custom
   
