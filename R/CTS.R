@@ -10,7 +10,7 @@
 #'  ChemSpider, BioCyc, ChEBI, CAS, HMDB, KEGG and LipidMAPS.
 #' @seealso  \code{\link[CTSgetR]{single_CTSgetR}}
 #' @export
-#' @import httr dplyr purrr
+#' @import httr dplyr purrr reshape2
 #' @examples
 #' \dontrun{
 #' id<-c("C15973","C00026","C05381")
@@ -21,16 +21,20 @@
 CTSgetR<-function(id, from, to, db_name = NULL, ...){
   
 
-  #treat all as data frame input
-  #map by row for consistency
-  args<- CTSgetR_format(id, from, to, format=TRUE, key_split=TRUE)
+  .id<-unique(id)
+  args<-  to %>% map( ~ CTSgetR_format(.id, from, ., db_name=db_name,format=TRUE, key_split=TRUE))
   
- 
+  
   out<-args %>%
-    map( ~ do.call('single_CTSgetR', c(.,list(db_name=db_name),list(...)))) %>%
+    map( ~ do.call('single_CTSgetR', .)) %>%
       do.call('rbind', .)
   
   rownames(out)<-NULL
+  
+  #add back any user supplied duplicates
+  db_key<- paste(out$id,out$from,out$to,out$key, sep='_')
+  melted<-dcast(out[!duplicated(db_key),],id~to,value.var = 'key')
+  out<-left_join(data.frame(id=.id),melted)
   
   return(out)
   
@@ -54,17 +58,19 @@ single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
   }
   
   if (from == 'Chemical Name') {
-    #name --> to inchikey --> to
+    #name --> inchikey --> to
     id <- tolower(id)
     ikeys <- CTSgetR_query(id, from, to = 'InChIKey', db_name)
     
     keys <- CTSgetR_query(ikeys$key, from = 'InChIKey', to, db_name)
     
+  
     out <-
       left_join(ikeys,
                 keys,
                 by = c('key' = 'id'),
                 suffix = c("", ".y"))
+    
     
     out <- out %>% select(id, from, to.y, key.y) %>%
       setNames(., c('id', 'from', 'to', 'key'))
@@ -85,13 +91,15 @@ single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
 }
 
 
+
 #' @export
-CTSgetR_format<-function(id,from,to,key_split=FALSE,format=FALSE,...){
+CTSgetR_format<-function(id,from,to,db_name='ctsgetr.sqlite',key_split=FALSE,format=FALSE,...){
   
+
 
   if(!'data.frame' %in% class(id)){
     
-    out<-expand.grid(id=id,from=from,to=to) 
+    out<-expand.grid(id=id,from=from,to=to,db_name=db_name) 
     
   } else {
     
@@ -105,16 +113,23 @@ CTSgetR_format<-function(id,from,to,key_split=FALSE,format=FALSE,...){
       split(.,.$'split_key')
   } 
   
+  # #deal with duplicated entries --
+  out<-lapply(out, function(x){
+   x[!duplicated(x$id),]
+  }) 
+  
+
+  
   #format for call
   if(format){
     out<-lapply(out, function(x){
       
-      list(id=x$id,from=x$from[1],to=x$to[1])
+      list(id=x$id,from=x$from[1],to=x$to[1],db_name=db_name)
       
     })
-  } 
+  }
   
-  return(out)
+  return(out %>% flatten())
   
 }
 
@@ -257,7 +272,7 @@ CTSgetR_query <-
         api_res <- get_translation(need, from, to)
       }
       
-      
+     
       #add to db
       tmp <- api_res %>%
         db_transform(.) %>%
@@ -806,9 +821,178 @@ check_cid<-function(cid){
 }
 
 
-test<-function(){
+#' @noRd 
+#' @export
+CTSgetR_summary<-function(from=NULL,to=NULL,obj=NULL){
   
-  library(CTSgetR)
+  f<-function(x){
+    
+    
+    .len<-length(x)
+    
+    if(.len > 2){
+      tmp<-paste0(x[1:(.len-1)],collapse=', ')
+      tmp<-paste0(c(tmp,x[.len]),collapse=' and ')
+    } else {
+      tmp<-paste0(x,collapse=' and ')
+    }
+    
+    tmp
+  }
+  
+  .method<-NULL
+  if(!is.null(to) & !is.null(from)){
+    .method<-paste0('Metabolite ',from, 's were translated to ',f(to),' identifiers.')
+  }
+  
+  
+  #summarise missing translations
+  if(!is.null(obj)){
+    x<-obj %>% select(-id)
+    missing<-apply(is.na(x) ,2,sum)
+    
+    if(any(missing)>0){
+      
+      id<-unlist(missing>0)
+      info<-apply(matrix(c(colnames(x) ,paste0('(',unlist(missing),')')),nrow=ncol(x)),1,'paste', collapse=' ')
+      
+      obj<-paste0('The following translations could not be completed: ',f(info[id]),'.')
+    }
+  }
+  
+  paste(c(.method,obj),collapse=' ')
+  
+}
+
+
+
+test<-function(){
+
+  library(CTSgetR)  
+  db_name<-'ctsgetr.sqlite'
+  
+  #from one to many
+  id<-c("alanine",'foo','lactic acid','foo')
+  from<-"Chemical Name"
+  to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
+  
+  (out<-CTSgetR(id,from,to,db_name=db_name))
+  
+  
+  #from many to many
+  args <-structure(list(id = structure(c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 
+                                         3L, 4L, 4L), .Label = c("alanine", "foo", "lactic acid", "HMDB0000161"
+                                         ), class = "factor"), from = structure(c(1L, 1L, 1L, 1L, 1L, 
+                                                                                  1L, 1L, 1L, 1L, 2L, 2L), .Label = c("Chemical Name", "Human Metabolome Database"
+                                                                                  ), class = "factor"), to = structure(c(1L, 1L, 1L, 2L, 2L, 2L, 
+                                                                                                                         3L, 3L, 3L, 2L, 1L), .Label = c("PubChem CID", "KEGG", "Human Metabolome Database"
+                                                                                                                         ), class = "factor")), class = "data.frame", row.names = c(NA, 
+                                                                                                                                                                                    -11L))
+  
+  
+  args %>%
+    split(.,.$from) %>%
+    map(~CTSgetR(.$id,.$from,.$to,db_name=db_name)) %>%
+    bind_rows(.)
+  
+  
+  #deal with duplicated left merge
+  a<-data.frame(foo=c(1,2,1,3))
+  b<-data.frame(foo=c(1,4))
+  left_join(a,b)
+  
+  
+  example_input<-function(){
+    
+    list(id = c("xylulose", "xylitol", "xanthosine", "xanthine", 
+                      "valine", "uridine", "uridine", "uric acid + myo-inositol", "urea", 
+                      "uracil", "tyrosine", "tryptophan", "trisaccharide", "triethanolamine", 
+                      "trehalose", "trans-4-hydroxyproline", "tocopherol alpha", "thymine", 
+                      "thymidine", "threonine", "threonic acid", "threitol", "taurine", 
+                      "tagatose", "sulfuric acid", "sucrose", "succinic acid", "stearic acid", 
+                      "sorbitol", "sophorose", "shikimic acid", "serine", "sarcosine", 
+                      "saccharic acid", "ribulose-5-phosphate", "ribose", "ribitol", 
+                      "rhamnose", "pyruvic acid", "pyrophosphate", "pyrazine 2,5-dihydroxy", 
+                      "propane-1,3-diol", "proline", "pipecolic acid", "phosphoric acid", 
+                      "phosphoethanolamine", "phenylethylamine", "phenylalanine", "phenylacetic acid", 
+                      "pelargonic acid", "pantothenic acid", "palmitoleic acid", "palmitic acid", 
+                      "oxoproline", "oxalic acid", "orotic acid", "ornithine", "oleic acid", 
+                      "N-methylalanine", "nicotinic acid", "nicotinamide", "N-hexanoylglycine", 
+                      "N-acetylglycine", "N-acetylglutamate", "N-acetyl-D-tryptophan", 
+                      "N-acetyl-D-mannosamine", "N-acetyl-D-hexosamine", "methylhexadecanoic acid", 
+                      "methionine sulfoxide", "methionine", "methanolphosphate", "melibiose", 
+                      "maltose", "malic acid", "maleimide", "lyxose", "lysine", "linolenic acid", 
+                      "linoleic acid", "levanbiose", "leucine", "lauric acid", "lactobionic acid", 
+                      "lactic acid", "kynurenine", "isothreonic acid", "isoleucine", 
+                      "isocitric acid", "inulotriose", "inositol allo-", "inosine", 
+                      "indole-3-lactate", "indole-3-acetate", "icosenoic acid", "hypoxanthine + ornithine", 
+                      "hydroxylamine", "hydroxycarbamate", "hydrocinnamic acid", "homoserine", 
+                      "homocystine", "histidine", "hexuronic acid", "guanosine", "glycolic acid", 
+                      "glycine", "glycerol-alpha-phosphate", "glycerol-3-galactoside", 
+                      "glyceric acid", "glutaric acid", "glutamine", "glutamic acid", 
+                      "glucuronic acid", "glucose-6-phosphate", "glucose", "gluconic acid", 
+                      "glucoheptose", "galactose-6-phosphate", "galactose", "galactonic acid", 
+                      "galactinol", "fumaric acid", "fucose + rhamnose", "fucose", 
+                      "fructose-6-phosphate", "fructose", "ethanolamine", "erythritol", 
+                      "dodecane", "digalacturonic acid", "cytidine-5'-diphosphate", 
+                      "cystine", "cysteine", "creatinine", "conduritol beta epoxide", 
+                      "citrulline", "citric acid", "cholic acid", "cholesterol", "cellobiotol", 
+                      "caprylic acid", "capric acid", "butane-2,3-diol", "beta-alanine", 
+                      "benzoic acid", "behenic acid", "aspartic acid", "asparagine", 
+                      "arachidonic acid", "arachidic acid", "arabitol", "arabinose", 
+                      "aminomalonic acid", "alpha ketoglutaric acid", "allantoin", 
+                      "allantoic acid", "alanine", "adipic acid", "adenosine-5-phosphate", 
+                      "adenosine", "aconitic acid", "5-methoxytryptamine", "5-hydroxyindole-3-acetic acid", 
+                      "4-hydroxyproline", "4-hydroxyhippuric acid", "4-hydroxybutyric acid", 
+                      "4-hydroxybenzoate", "3-ureidopropionate", "3-phosphoglycerate", 
+                      "3-methyl-1-oxobutylglycine", "3-hydroxypropionic acid", "3-hydroxybutanoic acid", 
+                      "3,6-dihydro-3,6-dimethyl-2,5-bishydroxypyrazine", "3,6-anhydrogalactose", 
+                      "3,6-anhydro-D-hexose", "2-oxogluconic acid", "2-monoolein", 
+                      "2-ketoisocaproic acid", "2-hydroxyvaleric acid", "2-hydroxyglutaric acid", 
+                      "2-hydroxybutanoic acid", "2-hydroxy-2-methylbutanoic acid", 
+                      "2-deoxytetronic acid", "2-aminoadipic acid", "2,3-dihydroxybutanoic acid", 
+                      "1-monostearin", "1-monopalmitin", "1-monoolein", "1,5-anhydroglucitol"
+    ), from = "Chemical Name", to = "KEGG", db_name = "ctsgetr.sqlite")
+    
+  }
+  
+  #new db
+  db_name<- 'ctsgetr.sqlite'
+  # init_CTSgetR_db(db_name)
+  
+  # db_name <- 'C:/Users/think/Dropbox/Software/dave/dave/dave.network/ctsgetr.sqlite'
+  # db_name<- 'ctsgetr.sqlite'
+  id<-c("uridine",'uridine','foo')
+  from<-"Chemical Name"
+  to<- c( "KEGG","BioCyc")
+  
+  CTSgetR_format(id, from, to, format=TRUE, key_split=TRUE)
+  
+  CTSgetR(id,from,to,db_name=db_name)
+  x<-do.call('CTSgetR',list(id,from,to,db_name))
+  
+  missing<-apply(is.na(x),2,sum)
+  if(any(missing)>0){
+    paste0('There were',)
+  }
+  
+  (x<-do.call('CTSgetR',example_input()))
+  #spread
+  library(reshape2)
+  
+  
+  melted<-dcast(x[!duplicated(x),],id~to,value.var = 'key')
+  left_join(data.frame(id=id),melted)
+  
+  db_stats(TRUE, db_name=db_name)
+  #check data base
+  db<-db_stats(TRUE, db_name=example_input()$db_name)
+  
+  db %>%
+    filter(target_id == 'DRTQHJPVMGBUCF-XVFCMESISA-N')
+  
+  db %>%
+    filter(source_id == 'DRTQHJPVMGBUCF-XVFCMESISA-N')
   
   #map: 
   id<-c("alanine",'lactic acid')

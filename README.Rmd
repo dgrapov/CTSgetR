@@ -7,7 +7,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo=FALSE, message=FALSE,warning=FALSE)
+knitr::opts_chunk$set(echo=TRUE, message=FALSE,warning=FALSE)
 ```
 
 # ![CTSgetR](https://github.com/dgrapov/CTSgetR/blob/master/inst/ctsgetR_logo.png?raw=true)
@@ -57,7 +57,7 @@ trans[grepl(want,trans,ignore.case=TRUE)]
 
 
 #### Initialize a local database to speed up routine queries
-```{r}
+```{r,eval=FALSE}
 db_name<-'ctsgetr.sqlite'
 init_CTSgetR_db(db_name)
 db_stats()
@@ -67,7 +67,7 @@ db_stats()
 
 #### `Chemical Name` to `InChIKey`
 ```{r,message=FALSE}
-
+db_name<-'ctsgetr.sqlite' # local cache
 id<-c("alanine",'lactic acid')
 from<-"Chemical Name"
 to<-"InChIKey"
@@ -83,29 +83,33 @@ id<-c("alanine",'lactic acid')
 from<-"Chemical Name"
 to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
 
-args<-CTSgetR_format(id,from,to)
-
-(out<-CTSgetR(args,db_name=db_name))
+CTSgetR(id,from,to,db_name=db_name)
 
 ```
 
 
 
 #### Many identifiers to one
-##### Build up complex queries by combingn  data frames of `id`, `from` to `to` values.
+##### Build up complex queries by combining  data frames of `id`, `from` to `to` values.
 ```{r}
 
 
-tmp2 <-
-  list(
-    id = c('HMDB0000161'),
-    from = 'Human Metabolome Database',
-    to = c('KEGG', 'PubChem CID')
-  ) %>% do.call('CTSgetR_format', .)
+ #from many to many
+  args <-structure(list(id = structure(c(1L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 
+                                         3L, 4L, 4L), .Label = c("alanine", "foo", "lactic acid", "HMDB0000161"
+                                         ), class = "factor"), from = structure(c(1L, 1L, 1L, 1L, 1L, 
+                                                                                  1L, 1L, 1L, 1L, 2L, 2L), .Label = c("Chemical Name", "Human Metabolome Database"
+                                                                                  ), class = "factor"), to = structure(c(1L, 1L, 1L, 2L, 2L, 2L, 
+                                                                                                                         3L, 3L, 3L, 2L, 1L), .Label = c("PubChem CID", "KEGG", "Human Metabolome Database"
+                                                                                                                         ), class = "factor")), class = "data.frame", row.names = c(NA, 
+                                                                                                                                                                                    -11L))
+args  
+  
+args %>%
+  split(.,.$from) %>%
+  map(~CTSgetR(.$id,.$from,.$to,db_name=db_name)) %>%
+  bind_rows(.)
 
-args2 <- rbind(args, tmp2)
-
-CTSgetR(args2,db_name=db_name)
 
 ```
 

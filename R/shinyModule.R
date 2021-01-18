@@ -5,6 +5,7 @@
 #' @param id,input,output,session Internal parameters for {shiny}.
 #'
 #' @noRd 
+#' @export
 #'
 #' @importFrom shiny NS tagList
 mod_CTSgetR_ui <- function(id) {
@@ -14,10 +15,13 @@ mod_CTSgetR_ui <- function(id) {
   
 }
 
+
+
 #' tCTSgetR Server Function
 #'
 #' @noRd 
-mod_CTSgetR_server <- function(id,data=NULL) {
+#' @export
+mod_CTSgetR_server <- function(id, data=NULL) {
 
     moduleServer(
       id,
@@ -146,11 +150,186 @@ mod_CTSgetR_server <- function(id,data=NULL) {
     )
 }
 
+#' CTSgetR UI Function
+#'
+#' @description A shiny Module.
+#'
+#' @param id,input,output,session Internal parameters for {shiny}.
+#'
+#' @noRd 
+#' @export
+#'
+#' @importFrom shiny NS tagList
+mod_CTSgetR_trigger_ui <- function(id) {
+  ns <- NS(id)
+  
+  tagList(uiOutput(ns('sidebar_ui')))
+  
+}
+
+#' tCTSgetR Server Function
+#'
+#' @noRd 
+#' @export
+mod_CTSgetR_trigger_server <- function(id, data=NULL,trigger=NULL) {
+  
+  moduleServer(
+    id,
+    function(input, output, session) {
+      
+      
+      rv<-reactiveValues()
+      
+      .data<-reactive({data()}) # normaliZe name but useless
+      
+      #if data is NULL
+      #use comma xseparated text input
+      #else supply a data frame to choose inpout column from
+      output$data_input <- renderUI({
+        ns <- session$ns
+        
+        tagList(
+          selectizeInput(ns('from_obj'), 'identifiers', choices = colnames(.data())),
+          tippy_this(
+            ns('from_obj'),
+            'Select column containing values to translate from'
+          )
+        )
+        
+      })
+      
+      
+      output$sidebar_ui <- renderUI({
+        
+        ns <- session$ns
+        
+        
+        from_opts <- valid_from()
+        to_opts <- valid_to()
+        
+        fluidRow(column(
+          12,
+          uiOutput(ns('data_input')),
+          selectizeInput(ns('from_id'), 'from', choices = from_opts, selected = 'Chemical Name'),
+          selectizeInput(ns('to_id'), 'to', choices = to_opts, selected='KEGG',multiple=TRUE)
+        ))
+        
+      })
+      
+      
+      #process input
+      get_input<-reactive({
+        
+        
+        shiny::validate(need(!is.null(input$from_obj),'Choose identifier options and then translate.'))
+        
+        .db_name<-Sys.getenv('ctsgetr_DB')
+        if(.db_name ==''){
+          .db_name<-'ctsgetr.sqlite'
+        }
+        
+        tmp<-.data()
+        if(is.null(tmp)){
+          id <- input$from_obj %>%
+            strsplit(.,',') %>%
+            unlist() %>%
+            trimws()
+        } else {
+          id<-tmp[,input$from_obj] %>%
+            as.character()
+        }
+        
+        
+        
+        from <- input$from_id
+        to <- input$to_id
+        
+        #description
+        
+       
+        list(id=id,from=from,to=to,db_name=.db_name,from_obj=input$from_obj)
+        
+      })
+      
+      get_summary<-reactive({
+        args<-get_input()
+        list(summary=CTSgetR_summary(args$from,args$to),input=args)
+      })
+      
+      get_results<-reactive({
+        
+        trigger<-trigger()
+        
+        if(is.null(trigger) || trigger == 0) {
+          return(NULL)
+        }
+        
+        
+        isolate({
+          args<-get_input()
+          # rv$summary<-CTSgetR_summary(args$from,args$to)
+          # rv$input<-args
+          #switch between local and
+          #API based lookup
+          #could not simplify with fun<-CTSgetR or other; do.call(fun,args)
+          if(!Sys.getenv('CTSgetR_API') == ''){
+            
+            args<-list(url= Sys.getenv('CTSgetR_API'), body=args)
+            
+            future({
+              do.call(post_ocpu, args)
+            })   %...>%
+              (function(e) {
+                e$results
+              }) %...!%
+              (function(e) {
+                warning(e)
+                return(NULL)
+              })
+            
+          } else {  
+            
+            future({
+              do.call(CTSgetR, args)
+            })   %...>%
+              (function(e) {
+                e
+              }) %...!%
+              (function(e) {
+                warning(e)
+                return(NULL)
+              })
+            
+          }
+          
+        })
+        
+      })
+      
+      
+      # get_results
+      
+      return(list(results = get_results, summary = get_summary))
+      
+      
+    }
+  )
+}
+
 
 
 
 test<-function(){
   
+  from<-'name'
+  to<-c('inchii','foo')
+  
+  CTSgetR_method_summary(from,to)
+  
+  
+  
+  
+
   
   #modules test
   module_test<-function(){
@@ -206,68 +385,602 @@ test<-function(){
   library(tippy)
   library(CTSgetR)
   library(ocpuclient) # for CTSgetR API
+  library(promises)
+  library(future)
+  plan(multisession)
+  plan(multiprocess)
   
-  # Sys.setenv('ctsgetr_DB'='inst/ctsgetr.sqlite') #local
+  Sys.setenv('ctsgetr_DB'='inst/ctsgetr.sqlite') #local
+  
   Sys.setenv('ctsgetr_DB'='/ctsgetr/inst/ctsgetr.sqlite') # at API
   Sys.setenv('CTSgetR_API'='http://localhost/ocpu/library/CTSgetR/R/CTSgetR') # url of API endpoint See notes for how to start API
   
   
   CTSgetR_module<-function(){
-    library(promises)
-    library(future)
-    plan(multisession)
     
     
-    example<-data.frame('chemical_name' = c('alanine','DMT'))
+    
+    example<-function(){data.frame('chemical_name' = c('alanine','DMT'))}
     
     #module
-    ui <- fluidPage(
-      
-      sidebarLayout(position = "left",
-                    sidebarPanel(tagList(mod_CTSgetR_ui("translate"))),
-                    mainPanel(verbatimTextOutput("main_out")))
-      
-    )
+    ui <- fluidPage(sidebarLayout(
+      position = "left",
+      sidebarPanel(tagList(
+        tags$div(
+          actionButton('external_trigger', 'translate', icon = icon('life-ring')),
+          align = 'center'
+        ),
+        mod_CTSgetR_trigger_ui("translate")
+      )),
+      mainPanel(verbatimTextOutput("main_out"))
+    ))
     
     server <- function(input, output, session) {
       
-      translation <- mod_CTSgetR_server('translate',data=example)
+      trigger<-reactive({
+        
+        input$external_trigger
+      })
+      
+      # translation <- mod_CTSgetR_server('translate',data=example) # internal trigger
+      translation <- mod_CTSgetR_trigger_server('translate',data=example,trigger= trigger)
       
       output$main_out <- renderPrint({
-        translation() %...>% print(.)
+        translation$results() %...>% print(.)
         
       })
+      
     }
     
     shinyApp(ui, server)
+  }
+  
+  
+  #async sleep module
+  acync_sleep_module<-function(){
+    
+    #deps for local version
+    library(shiny)
+    library(shinyjs)
+    library(tippy)
+    library(CTSgetR)
+    library(ocpuclient) # for CTSgetR API
+    library(promises)
+    library(future)
+    # plan(multisession)
+    plan(multiprocess)
+
+    progress_gif<-'C:/Users/think/Desktop/progress2.gif'
+    # #show gif
+    # imageOutput(progress_gif)
+    # img(src="sample.gif", align = "left",height='250px',width='500px')
+    
+    
+    # module ------------------------------------------------------------------
+    mod_server <- function(id, trigger=NULL) {
+      
+      moduleServer(
+        id,
+        function(input, output, session) {
+          
+          
+          output$sidebar_ui <- renderUI({
+            
+            ns <- session$ns
+            
+            fluidRow(column(
+              12,
+              numericInput(ns('sleep'),'sleep time',1)
+            ))
+            
+          })
+          
+          get_input<-reactive({
+            
+            input$sleep
+            
+          })
+          
+          get_rv<-reactive({
+            
+            #main fun
+            f<-function(sleep){
+              start<-Sys.time()
+              Sys.sleep(sleep)
+              list(start=start,end=Sys.time(),diff = Sys.time()- start)
+            }
+            
+            trigger<-trigger()
+            
+            if(is.null(trigger) || trigger == 0) {
+              f<-function(...){
+                'Start sleeping'
+              }
+            }
+            
+            
+            
+            isolate({
+              args <- get_input()
+            
+              
+              if(is.null(args)) {
+                f<-function(...){
+                  'Start sleeping'
+                }
+              }
+              
+              
+              future({
+                f(args)
+              })   %...>%
+                (function(e) {
+                 e
+                }) %...!%
+                (function(e) {
+                  warning(e)
+                  return(NULL)
+                })
+              
+            })
+          })
+          
+          return(get_rv)
+          
+        }
+      )
+    }
+    
+    
+    mod_ui<-function(id) {
+      ns <- NS(id)
+      
+      tagList(uiOutput(ns('sidebar_ui')))
+      
+    }
+    
+    #module
+    library(shinyjs)
+    
+    ui <- fluidPage(  useShinyjs(), sidebarLayout(
+      position = "left",
+      sidebarPanel(tagList(
+        tags$div(
+          actionButton('trigger', 'sleep 1', icon = icon('life-ring')),
+          actionButton('trigger2', 'sleep 2', icon = icon('life-ring')),
+          actionButton('trigger3', 'sleep 3', icon = icon('life-ring')),
+          align = 'center'
+        ),
+        mod_ui("sleep"),
+        mod_ui("sleep2"),
+        mod_ui("sleep3")
+      )),
+      mainPanel(
+        h2('sleep'),
+        hidden(uiOutput('progress_gif_ui')),
+        verbatimTextOutput("main_out1"),
+        h2('sleep 2'),
+        verbatimTextOutput("main_out2"),
+        h2('sleep 3'),
+        verbatimTextOutput("main_out3"))
+    ))
+    
+    server <- function(input, output, session) {
+      
+      
+      #https://stackoverflow.com/questions/50165443/async-process-blocking-r-shiny-app
+      rv<-reactiveVal()
+      
+      rv2<-reactiveValues()
+      rv3<-reactiveValues()
+      
+      output$progress_gif_ui<-renderUI({
+        imageOutput('progress_gif',height = "100px")
+      })
+      
+      output$progress_gif<-renderImage({
+        list(
+          src = progress_gif
+        )
+      },deleteFile=FALSE)
+      
+      trigger<-reactive({
+        
+        input$trigger
+      })
+      
+      trigger2<-reactive({
+        
+        input$trigger2
+      })
+      
+      trigger3<-reactive({
+        
+        input$trigger3
+      })
+      
+      observeEvent(input$trigger,{
+        
+        # browser()
+        show('progress_gif_ui')
+        name<-'sleep1'
+        f<-sleep1
+        
+        rv2[[name]]$msg<-'Calculating...'
+        rv2[[name]]$results<-NULL 
+        
+        f() %...>% 
+          (function(e) {
+            rv2[[name]]$results<-e
+          })
+        
+        return(NULL)
+        
+      })
+      
+      observeEvent(input$trigger2,{
+        
+        print('triggred---')
+        
+        name<-'sleep2'
+        f<-sleep2
+        
+        rv2[[name]]$msg<-'Calculating...'
+        rv2[[name]]$results<-NULL 
+        
+        f() %...>% 
+          (function(e) {
+            rv2[[name]]$results<-e
+          })
+        
+        return(NULL)
+        
+      })
+      
+      observeEvent(input$trigger3,{
+        
+        name<-'sleep3'
+        f<-sleep3
+        
+        rv2[[name]]$msg<-'Calculating...'
+        rv2[[name]]$results<-NULL 
+        
+        f() %...>% 
+              (function(e) {
+                rv2[[name]]$results<-e
+              })
+        
+        return(NULL)
+        
+      })
+      
+      # translation <- mod_CTSgetR_server('translate',data=example) # internal trigger
+      sleep1 <- mod_server('sleep', trigger= trigger)
+      sleep2 <- mod_server('sleep2', trigger= trigger2)
+      sleep3 <- mod_server('sleep3', trigger= trigger3)
+      
+      get_obj<-function(name,rv){
+        obj<-reactiveValuesToList(rv)[[name]]
+        
+        # req(obj$msg
+        
+        # if(is.null(obj$results)) return(obj$msg)
+        req(obj$results)
+        
+        obj$results
+      }
+      
+      output$main_out1 <- renderPrint({
+        
+        obj<-get_obj('sleep1',rv2)
+        req(obj)
+        hide('progress_gif_ui')
+        return(obj)
+        
+      })
+      
+      output$main_out2 <- renderPrint({
+        
+        req(get_obj('sleep2',rv2))
+        
+      })
+      
+      output$main_out3 <- renderPrint({
+      
+        
+        req(get_obj('sleep3',rv2))
+        
+      })
+      
+    }
+    
+    
+    
+    shinyApp(ui, server)
+    
+    
+    
+    
+  }
+  
+  #r_bg async example modules
+  r_bg_example<-function(){
+    
+    #ref: https://www.r-bloggers.com/asynchronous-background-execution-in-shiny-using-callr/
+    library(callr)
+   
+    #main fun
+    f<-function(sleep){
+      start<-Sys.time()
+      Sys.sleep(sleep)
+      list(start=start,end=Sys.time(),diff = Sys.time()- start)
+    }
+    
+    
+    
+    args<-list(10)
+    
+    rx <- callr::r_bg(
+      func = f,
+      args = args,
+      supervise = FALSE
+    )
+    
+    get_value<-function(x){
+      
+      pending<-x$is_alive()
+      
+      if(pending){
+        'Calculating...'
+      } else {
+        
+        x$get_result()
+      }
+      
+    }
+    
+    
+    
+    
+    # module ------------------------------------------------------------------
+    mod_server <- function(id, trigger=NULL) {
+      
+      moduleServer(
+        id,
+        function(input, output, session) {
+          
+          
+          output$sidebar_ui <- renderUI({
+            
+            ns <- session$ns
+            
+            fluidRow(column(
+              12,
+              numericInput(ns('sleep'),'sleep time',1)
+            ))
+            
+          })
+          
+          get_input<-reactive({
+            
+            input$sleep
+            
+          })
+          
+          get_rv<-reactive({
+            
+            #main fun
+            f<-function(sleep){
+              start<-Sys.time()
+              Sys.sleep(sleep)
+              list(start=start,end=Sys.time(),diff = Sys.time()- start)
+            }
+            
+            trigger<-trigger()
+            
+            if(is.null(trigger) || trigger == 0) {
+              f<-function(...){
+                'Start sleeping'
+              }
+            }
+            
+            
+            
+            isolate({
+              args <- get_input()
+              
+              
+              if(is.null(args)) {
+                f<-function(...){
+                  'Start sleeping'
+                }
+              }
+              
+              
+              
+             callr::r_bg(
+                func = f,
+                args = args,
+                supervise = FALSE
+              )
+              
+            })
+          })
+          
+          return(get_rv)
+          
+        }
+      )
+    }
+    
+    
+    mod_ui<-function(id) {
+      ns <- NS(id)
+      
+      tagList(uiOutput(ns('sidebar_ui')))
+      
+    }
+    
+    #module
+    ui <- fluidPage(sidebarLayout(
+      position = "left",
+      sidebarPanel(tagList(
+        tags$div(
+          actionButton('trigger', 'sleep 1', icon = icon('life-ring')),
+          actionButton('trigger2', 'sleep 2', icon = icon('life-ring')),
+          actionButton('trigger3', 'sleep 3', icon = icon('life-ring')),
+          align = 'center'
+        ),
+        mod_ui("sleep"),
+        mod_ui("sleep2"),
+        mod_ui("sleep3")
+      )),
+      mainPanel(
+        h2('sleep'),
+        verbatimTextOutput("main_out1"),
+        h2('sleep 2'),
+        verbatimTextOutput("main_out2"),
+        h2('sleep 3'),
+        verbatimTextOutput("main_out3"))
+    ))
+    
+    server <- function(input, output, session) {
+    
+      
+      trigger<-reactive({
+        
+        input$trigger
+      })
+      
+      trigger2<-reactive({
+        
+        input$trigger2
+      })
+      
+      trigger3<-reactive({
+        
+        input$trigger3
+      })
+      
+      #calculate
+      observeEvent(input$trigger,{
+        
+        # check if calculation is triggered
+        # trigger if no value
+        # return progress or value
+        # memoise recalculation
+        
+        # sleep3() %...>% rv()
+        sleep() %...>% 
+          (function(e) {
+            rv2$sleep<-e
+          })
+        
+        return(NULL)
+        
+      })
+      
+      observeEvent(input$trigger2,{
+        
+        
+        sleep2() %...>% 
+          (function(e) {
+            rv2$sleep2<-e
+          })
+        
+        return(NULL)
+        
+      })
+      
+      observeEvent(input$trigger3,{
+        
+        
+        # sleep3() %...>% rv()
+        sleep3() %...>% 
+          (function(e) {
+            rv2$sleep3<-e
+          })
+        
+        return(NULL)
+        
+      })
+      
+      sleep <- mod_server('sleep', trigger= trigger)
+      sleep2 <- mod_server('sleep2', trigger= trigger2)
+      sleep3 <- mod_server('sleep3', trigger= trigger3)
+      
+      
+      #get objects generic
+      
+      output$main_out1 <- renderPrint({
+        
+        obj<-reactiveValuesToList(rv2)$sleep
+        req(obj)
+        
+        obj
+        
+      })
+      
+      output$main_out2 <- renderPrint({
+        
+        obj<-reactiveValuesToList(rv2)$sleep2
+        req(obj)
+        
+        obj
+        
+      })
+      
+      output$main_out3 <- renderPrint({
+        
+        
+        obj<-reactiveValuesToList(rv2)$sleep3
+        req(obj)
+        
+        obj
+        
+      })
+      
+    }
+    
+    shinyApp(ui, server)
+    
+    
   }
   
   #deps for async api version
   library(ocpuclient)
   library(promises)
   library(future)
-  plan(multisession)
-  # plan(multiprocess)
+  # plan(multisession)
+  plan(multiprocess)
   # plan(sequential)
   
   #module
-  ui <- fluidPage(
-    # fluidRow(
+  ui <- fluidPage(# fluidRow(
     #   mod_CTSgetR_ui("translate"),
     #   verbatimTextOutput('main_out'),
     #   actionButton('cts_debug', 'explode', icon = icon('life-ring'))
     # )
-    sidebarLayout(position = "left",
-                  sidebarPanel(tagList(mod_CTSgetR_ui("translate"))),
-                  mainPanel(verbatimTextOutput("main_out")))
-
-  )
+    sidebarLayout(
+      position = "left",
+      sidebarPanel(tagList(
+        uiOutput('trigger'),
+        mod_CTSgetR_ui("translate")
+      )),
+      mainPanel(verbatimTextOutput("main_out"))
+    ))
   
   server <- function(input, output, session) {
     
     rv<-reactiveValues(translation=NULL)
     
     translation<-mod_CTSgetR_server('translate')
+    
+    output$trigger<-renderUI({
+      
+      actionButton('trigger_btn','trigger')
+      
+    })
     
     # # observe({
     #   future({
@@ -294,7 +1007,7 @@ test<-function(){
       
       # rv$translation<-translation()
       
-      translation() %...>% print(.)
+      translation() #%...>% print(.)
       # translation() %...>%
       #   (function(e) {
       #     rv$translation<-e
@@ -352,6 +1065,7 @@ test<-function(){
         plotOutput(outputId = ns('random_plot'))
       )
     }
+    
     module <- function(input, output, session, X, Y) {
       xy <- async(as.numeric(X()), as.numeric(Y()))
       x <- xy[[1]]

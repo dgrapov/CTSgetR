@@ -49,22 +49,23 @@ db_add<-function(id, from, to, key,db_name='inst/ctsgetr.sqlite',init = TRUE,ver
   
   db_init<-"CTSgetR" %in% dbListTables(mydb)
  
- 
   if(!db_init & init){
     
+    print(getwd())
     #initialize db format
     init_CTSgetR_db(db_name)
     
   } 
-  
+
   #format input
   input <- data.frame(id, from, to,key) %>% 
+    .[!duplicated(.$id),] %>%
     db_transform(.) %>% .$data %>%
-    mutate(key_index=db_key(.))
+    mutate(key_index=db_key(.)) 
   
+  #prevent adding new duplicates
   #check if values exist
   #if so do not replace
-
   query<-"SELECT EXISTS(SELECT 1 FROM CTSgetR WHERE key_index=:key_index);"
   params<-list(key_index=input$key_index %>% as.character()) # all exist
   old<-dbGetQuery(mydb, query,params) %>% unlist() %>% as.logical()
@@ -170,7 +171,6 @@ db_stats<-function(data=FALSE,db_name='inst/ctsgetr.sqlite'){
   
   query<-"SELECT * FROM CTSgetR"
   res<-dbGetQuery(mydb, query)
-  on.exit(DBI::dbDisconnect(mydb))
   
   x<-paste(as.character(res$source),as.character(res$target),sep=' <--> ')
   if(data){
@@ -184,21 +184,68 @@ db_stats<-function(data=FALSE,db_name='inst/ctsgetr.sqlite'){
 #' @export
 #' @param db_name string sqlite database name
 #' @import RSQLite
-init_CTSgetR_db<-function(db_name='inst/ctsgetr.sqlite',verbose=T){
-  
-  if(verbose) print('Creating a new database')
-  
-  x<-structure(list(source = structure(c(1L, 1L, 1L), .Label = "InChIKey", class = "factor"), 
-                    target = structure(c(1L, 1L, 1L), .Label = "PubChem CID", class = "factor"), 
-                    source_id = structure(1:3, .Label = c("JVTAAEKCZFNVCJ-UHFFFAOYSA-N", 
-                                                          "BWLBGMIXKSTLSX-UHFFFAOYSA-N", "AEMRFAOFKBGASW-UHFFFAOYSA-N"
-                    ), class = "factor"), target_id = structure(1:3, .Label = c("19789253", 
-                                                                                "11671", "3698251"), class = "factor"), key_index = c("InChIKey_PubChem CID_JVTAAEKCZFNVCJ-UHFFFAOYSA-N_19789253", 
-                                                                                                                                      "InChIKey_PubChem CID_BWLBGMIXKSTLSX-UHFFFAOYSA-N_11671", 
-                                                                                                                                      "InChIKey_PubChem CID_AEMRFAOFKBGASW-UHFFFAOYSA-N_3698251"
-                                                                                )), class = "data.frame", row.names = c(NA, -3L))
-  mydb <- dbConnect(RSQLite::SQLite(), db_name)
-  on.exit(db_exit(mydb))
-  dbWriteTable(mydb, "CTSgetR", x, overwrite=TRUE)
-}
+#' @details start a new data base
+init_CTSgetR_db <-
+  function(db_name = 'ctsgetr.sqlite',
+           from_package = TRUE,
+           verbose = T,force=FALSE) {
+    if (from_package) {
+      
+      if(force) {
+        tryCatch(unlink(db_name))
+      }
+      
+      mydb <- system.file('ctsgetr.sqlite', package = 'CTSgetR')
+      work <- file.copy(mydb, db_name)
+      
+      if (verbose) {
+        if (work) {
+          print('Copying package database')
+         
+        } else {
+          print('Could not copy package database')
+        }
+      }
+      
+      
+    } else {
+      if (verbose)
+        print('Creating a new database')
+      x <-
+        structure(
+          list(
+            source = structure(c(1L, 1L, 1L), .Label = "InChIKey", class = "factor"),
+            target = structure(c(1L, 1L, 1L), .Label = "PubChem CID", class = "factor"),
+            source_id = structure(
+              1:3,
+              .Label = c(
+                "JVTAAEKCZFNVCJ-UHFFFAOYSA-N",
+                "BWLBGMIXKSTLSX-UHFFFAOYSA-N",
+                "AEMRFAOFKBGASW-UHFFFAOYSA-N"
+              ),
+              class = "factor"
+            ),
+            target_id = structure(
+              1:3,
+              .Label = c("19789253",
+                         "11671", "3698251"),
+              class = "factor"
+            ),
+            key_index = c(
+              "InChIKey_PubChem CID_JVTAAEKCZFNVCJ-UHFFFAOYSA-N_19789253",
+              "InChIKey_PubChem CID_BWLBGMIXKSTLSX-UHFFFAOYSA-N_11671",
+              "InChIKey_PubChem CID_AEMRFAOFKBGASW-UHFFFAOYSA-N_3698251"
+            )
+          ),
+          class = "data.frame",
+          row.names = c(NA,-3L)
+        )
+      mydb <- dbConnect(RSQLite::SQLite(), db_name)
+      on.exit(db_exit(mydb))
+      dbWriteTable(mydb, "CTSgetR", x, overwrite = TRUE)
+      
+      
+    }
+  }
+
 

@@ -12,7 +12,8 @@ Depends:
     tidyr,
     purrr,
     httr,
-    RSQLite
+    RSQLite,
+    reshape2
 License: MIT
 Suggests:
     testthat
@@ -22,4 +23,5 @@ Imports:
     purrr,
     httr,
     RSQLite,
-    tidyr
+    tidyr,
+    reshape2
