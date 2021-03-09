@@ -1,3 +1,21 @@
+
+
+#debug
+library(CTSgetR)
+CTSgetR::CTSgetR(id=c("C15973","C00026","C05381"), from=c("KEGG"), to = c("PubChem CID"))
+
+
+# want<-'smiles'
+# possible_to<-unlist(valid_to())
+# possible_to[grepl(want,possible_to,ignore.case=TRUE)]
+# CTSgetR::CTSgetR(id=c("C15973","C00026","C05381"), from=c("InChIKey"), to = c("PubChem CID"))
+
+#inchi to smiles
+webchem::get_csid  #https://docs.ropensci.org/webchem/reference/get_csid.html
+rcdkTools::inchi2smiles   # using open babel
+
+
+
 #TODO 
 # add local copy and build to dockerfile
 #change rstudio server login from opencpu 

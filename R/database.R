@@ -172,6 +172,8 @@ db_stats<-function(data=FALSE,db_name='inst/ctsgetr.sqlite'){
   query<-"SELECT * FROM CTSgetR"
   res<-dbGetQuery(mydb, query)
   
+  #the connections should be normalized already with source/target order?
+  
   x<-paste(as.character(res$source),as.character(res$target),sep=' <--> ')
   if(data){
     res

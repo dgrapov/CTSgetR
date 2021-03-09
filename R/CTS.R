@@ -18,9 +18,14 @@
 #' to<-"PubChem CID"
 #' CTSgetR(id,from,to)
 #' }
-CTSgetR<-function(id, from, to, db_name = NULL, ...){
+CTSgetR<-function(id, from, to, db_name = 'ctsgetr.sqlite', ...){
   
 
+  if(is.null(db_name) || !file.exists(db_name)) {
+    db_name<-'ctsgetr.sqlite'
+    init_CTSgetR_db(db_name) # initialize schema and small sample
+  }
+  
   .id<-unique(id)
   args<-  to %>% map( ~ CTSgetR_format(.id, from, ., db_name=db_name,format=TRUE, key_split=TRUE))
   

@@ -63,3 +63,11 @@ test_that("one to one translation", {
 # })
 # 
 # unlink(init_db)
+
+id<-c("C15973","C00026","C05381")
+from<-"KEGG"
+to <-"PubChem CID"
+CTSgetR(id,from=from , to = to ,db_name=NULL)
+
+
+args<-  to %>% map( ~ CTSgetR_format(.id, from, ., db_name=db_name,format=TRUE, key_split=TRUE))
