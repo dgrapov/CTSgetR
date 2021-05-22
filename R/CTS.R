@@ -1,6 +1,6 @@
 
 #' @title CTSgetR
-#' @param id a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and code{\link{valid_from}}
+#' @param id a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and \code{\link{valid_from}}
 #' @param from Database name describing \code{id} see \code{\link[CTSgetR]{valid_from}}
 #' @param to Database name to translate \code{id} see \code{\link[CTSgetR]{valid_to}}
 #' @param db_name string path for sqlite database to store cached results in see \code{\link[CTSgetR]{valid_to}}
@@ -62,9 +62,10 @@ single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
     
   }
   
-  if (from == 'Chemical Name') {
+  if (from == 'Chemical Name' | to == 'Chemical Name') {
     #name --> inchikey --> to
     id <- tolower(id)
+    
     ikeys <- CTSgetR_query(id, from, to = 'InChIKey', db_name)
     
     keys <- CTSgetR_query(ikeys$key, from = 'InChIKey', to, db_name)
@@ -84,8 +85,11 @@ single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
     out$from[is.na(out$from)] <- na.omit(out$from)[1]
     out$to[is.na(out$to)] <- na.omit(out$to)[1]
     
-  } else {
-    out <- CTSgetR_query(id, from, to, db_name)
+  } 
+  
+  
+  if(from != 'Chemical Name' & to != 'Chemical Name') {
+      out <- CTSgetR_query(id, from, to, db_name)
     
   }
   
@@ -94,7 +98,6 @@ single_CTSgetR <- function(id, from, to, db_name = NULL, ...) {
   return(out)
   
 }
-
 
 
 #' @export
@@ -882,6 +885,19 @@ test<-function(){
   to<- c( "PubChem CID", "KEGG","Human Metabolome Database")
   
   (out<-CTSgetR(id,from,to,db_name=db_name))
+  
+  
+  id<-out$`PubChem CID`
+  from<-"PubChem CID"
+  to<-"Chemical Name"
+  
+  out2<-CTSgetR(id,from,to,db_name=db_name)
+  
+  id<-out2$'InChIKey'
+  from<-"InChIKey"
+  to<- "Chemical Name"
+  
+  out3<-CTSgetR(id,from,to,db_name=db_name)
   
   
   #from many to many
