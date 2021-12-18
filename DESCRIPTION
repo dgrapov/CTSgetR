@@ -13,15 +13,9 @@ Depends:
     purrr,
     httr,
     RSQLite,
-    reshape2
+    reshape2,
+    shiny
 License: MIT
 Suggests:
     testthat
 RoxygenNote: 7.1.0
-Imports:
-    dplyr,
-    purrr,
-    httr,
-    RSQLite,
-    tidyr,
-    reshape2

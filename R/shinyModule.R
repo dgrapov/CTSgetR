@@ -277,7 +277,7 @@ mod_CTSgetR_trigger_server <- function(id, data=NULL,trigger=NULL) {
             args<-list(url= Sys.getenv('CTSgetR_API'), body=args)
             
             future({
-              do.call(post_ocpu, args)
+              do.call(post_ocpu, args)$results
             })   %...>%
               (function(e) {
                 e$results
@@ -308,7 +308,7 @@ mod_CTSgetR_trigger_server <- function(id, data=NULL,trigger=NULL) {
       
       
       # get_results
-      
+    
       return(list(results = get_results, summary = get_summary))
       
       
@@ -321,16 +321,14 @@ mod_CTSgetR_trigger_server <- function(id, data=NULL,trigger=NULL) {
 
 test<-function(){
   
+  library(CTSgetR)
   from<-'name'
   to<-c('inchii','foo')
   
   CTSgetR_method_summary(from,to)
   
   
-  
-  
 
-  
   #modules test
   module_test<-function(){
     

@@ -17,4 +17,5 @@ RUN echo -e "/ctsgetr/ rw,\n/ctsgetr/** rwkmix,\n" >> /etc/apparmor.d/opencpu.d/
 
 
 COPY ./ ./ctsgetr
+
 RUN Rscript -e "devtools::install('ctsgetr',upgrade='never')"

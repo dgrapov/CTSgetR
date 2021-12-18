@@ -4,17 +4,14 @@ services:
     ctsgetr:
       build: 
         context: .
-        dockerfile: dockerfile_custom
+        dockerfile: dockerfile
         args:
           - rstudio_pass=${rstudio_pass}
       image: dgrapov/ctsgetr:latest
       container_name: ctsgetr
-      
-      volumes:
-        - ${ctsgetr_db_mount}:/ctsgetrdb/
         
       environment:
-        - ctsgetr_db=/ctsgetr/inst/ctsgetr.sqlite # set this to mounted version else use internal
+        - ctsgetr_db=/ctsgetr/ctsgetr.sqlite # set this to mounted version else use internal
       
       ports:
         - "80:80"

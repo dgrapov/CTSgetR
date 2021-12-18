@@ -41,7 +41,7 @@ docker-compose -f docker-compose.yml up -d
 docker exec -ti ctsgetr bash
 
 #might need to own mounted sqlit
-sudo chown www-data /ctsgetr/inst/.
+sudo chown www-data /root/ctsgetr/.
 
 #configure app armor
 #http://bbroeksema.github.io/2014/11/20/using-sqlite-with-opencpu.html
@@ -56,7 +56,7 @@ https://cts.fiehnlab.ucdavis.edu/rest/convert/KEGG/InchiKey/C15973,C00026
 # Calling the API from R -----------------------------------------------------------------
 library(ocpuclient)
 
-base_url<-'http://localhost/ocpu/'
+base_url<-'http://localhost:8084/ocpu/'
 
 endpoint<-'library/CTSgetR/R/heartbeat'
 url<-paste0(base_url,endpoint)
@@ -70,7 +70,7 @@ url<-paste0(base_url,endpoint)
 post_ocpu(url=url)
 
 #db 
-db_name<-'/ctsgetr/inst/ctsgetr.sqlite'
+db_name<-'/ctsgetr/ctsgetr.sqlite'
 # db_name<-'/ctsgetr/ctsgetr.sqlite'
 # db_name<-'/ctsgetrdb/ctsgetr.sqlite'
 endpoint<-'library/CTSgetR/R/db_stats'
