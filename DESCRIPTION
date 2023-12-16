@@ -14,7 +14,7 @@ Depends:
     httr,
     RSQLite,
     reshape2,
-    shiny
+    ocpuclient
 License: MIT
 Suggests:
     testthat

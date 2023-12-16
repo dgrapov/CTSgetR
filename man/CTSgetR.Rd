@@ -4,10 +4,10 @@
 \alias{CTSgetR}
 \title{CTSgetR}
 \usage{
-CTSgetR(id, from, to, db_name = NULL, ...)
+CTSgetR(id, from, to, db_name = "ctsgetr.sqlite", ...)
 }
 \arguments{
-\item{id}{a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and code{\link{valid_from}}}
+\item{id}{a vector of metabolite identifier(s) or name(s) to translate see \code{\link{valid_to}} and \code{\link{valid_from}}}
 
 \item{from}{Database name describing \code{id} see \code{\link[CTSgetR]{valid_from}}}
 

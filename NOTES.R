@@ -4,6 +4,8 @@
 library(CTSgetR)
 CTSgetR::CTSgetR(id=c("C15973","C00026","C05381"), from=c("KEGG"), to = c("PubChem CID"))
 
+nano #docker cred error
+~/.docker/config.json # remove credsStore
 
 want<-'sm'
 possible_to<-unlist(valid_to())
@@ -40,7 +42,7 @@ docker-compose -f docker-compose.yml up -d
 #interactive debug
 docker exec -ti ctsgetr bash
 
-#might need to own mounted sqlit
+#might need to own mounted sqlite
 sudo chown www-data /root/ctsgetr/.
 
 #configure app armor
@@ -70,7 +72,7 @@ url<-paste0(base_url,endpoint)
 post_ocpu(url=url)
 
 #db 
-db_name<-'/ctsgetr/ctsgetr.sqlite'
+db_name<-'/root/ctsgetr/ctsgetr.sqlite'
 # db_name<-'/ctsgetr/ctsgetr.sqlite'
 # db_name<-'/ctsgetrdb/ctsgetr.sqlite'
 endpoint<-'library/CTSgetR/R/db_stats'
