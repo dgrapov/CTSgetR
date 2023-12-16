@@ -3,4 +3,5 @@
 # Example code in package build process
 .Rproj.user
 NOTES.sh
+NOTES.R
 cts.sqlite
