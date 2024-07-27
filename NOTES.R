@@ -1,3 +1,27 @@
+#07/27/2024
+library(CTSgetR)
+
+CTSgetR(id = "threonine",
+        from = "Chemical Name",
+        to = "KEGG",
+        db_name ='ctsgetr.sqlite')
+
+# strange case
+CTSgetR(id = c("foo","threonine"),
+        from = "Chemical Name",
+        to = "KEGG",
+        db_name ='ctsgetr.sqlite')
+CTSgetR(id = c("foo"),
+        from = "Chemical Name",
+        to = "KEGG",
+        db_name ='ctsgetr.sqlite')
+
+
+CTSgetR(id = "n-[2-(6-amino-9h-purin-9-yl)ethyl]-n-(2-furylmethyl)amine",
+        from = "Chemical Name",
+        to = "KEGG",
+        db_name ='ctsgetr.sqlite')
+
 
 
 #debug

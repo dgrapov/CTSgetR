@@ -151,7 +151,7 @@ name_to_inchikey <- function(name, algorithm = 'biological') {
   f <- function(x) {
     x %>%
       tolower() %>%
-      URLencode(.) %>%
+      URLencode(.,reserved=TRUE) %>%
       paste0(
         'https://cts.fiehnlab.ucdavis.edu/rest/score/Chemical%20Name/',
         .,
@@ -259,7 +259,7 @@ CTSgetR_query <-
   function(id, from, to, db_name = NULL) {
     in_db <- db_get(id, from, to, db_name)
     
-    if (!is.null(in_db)) {
+    if (!is.null(in_db) & nrow(in_db)>0) {
       in_db <- db_get(id, from, to, db_name)
       
       have <- id[id %in% in_db$id]
